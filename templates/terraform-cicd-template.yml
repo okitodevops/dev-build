@@ -13,7 +13,7 @@ parameters:
   - name: TERRAFORM_DESTROY
     default: false
     type: boolean
-    displayName: "Do you wish to run terraform destroy?"]
+    displayName: "Do you wish to run terraform destroy?"
 
   - name: TERRAFORM_STORAGE_RG_NAME
     default: ""
