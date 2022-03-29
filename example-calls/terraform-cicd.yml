@@ -64,7 +64,7 @@ stages:
           - checkout: self
           - checkout: github://libre-devops/azure-naming-convention
 
-          - template: /templates/terraform-cicd-template.yml@azure-naming-convention
+          - template: /templates/terraform-cicd-template.yml@libre-devops/azure-naming-convention
             parameters:
               SHORTHAND_PROJECT_NAME: ${{ parameters.SHORTHAND_PROJECT_NAME }}
               SHORTHAND_ENVIRONMENT_NAME: ${{ parameters.SHORTHAND_ENVIRONMENT_NAME }}
