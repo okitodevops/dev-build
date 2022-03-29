@@ -5,11 +5,6 @@ parameters:
     default: ""
     displayName: "What is the path to your terraform code?"
 
-  - name: TERRAFORM_COMPLIANCE_PATH
-    type: string
-    default: ""
-    displayName: "Where is your terraform-compliance policy files located?"
-
   - name: TERRAFORM_VERSION
     type: string
     default: ""
@@ -18,7 +13,12 @@ parameters:
   - name: TERRAFORM_DESTROY
     default: false
     type: boolean
-    displayName: "Do you wish to run terraform destroy?"
+    displayName: "Do you wish to run terraform destroy?"]
+
+  - name: TERRAFORM_STORAGE_RG_NAME
+    default: ""
+    type: string
+    displayName: "What is the resource group name in which the storage account exists in?"
 
   - name: TERRAFORM_STORAGE_ACCOUNT_NAME
     default: ""
@@ -35,11 +35,6 @@ parameters:
     type: string
     displayName: "What is the key used to access your storage account? Please note, this value is a secret"
 
-  - name: TERRAFORM_STORAGE_RG_NAME
-    default: ""
-    type: string
-    displayName: "What is the resource group name in which the storage account exists in?"
-
   - name: TERRAFORM_STATE_NAME
     default: ""
     type: string
@@ -49,6 +44,11 @@ parameters:
     default: ""
     type: string
     displayName: "Which workspace should be used or created?"
+
+  - name: TERRAFORM_COMPLIANCE_PATH
+    type: string
+    default: ""
+    displayName: "Where is your terraform-compliance policy files located?"
 
   - name: AZURE_TARGET_CLIENT_ID
     default: ""
@@ -69,10 +69,24 @@ parameters:
     default: ""
     type: string
     displayName: "What is the tenant ID in which the target subscription resides?"
+    
+  - name: SHORTHAND_PROJECT_NAME
+    default: ""
+    type: string
+    displayName: "What is the shorthand name for your project?"
+    
+  - name: SHORTHAND_ENVIRONMENT_NAME
+    default: ""
+    type: string
+    displayName: "What is the shorthand (3 character) name for environment you are deploying to?"
+    
+  - name: SHORTHAND_LOCATION_NAME
+    default: ""
+    type: string
+    displayName: "What is the shorthand location name? E.g. uks for UK South etc"
 
 steps:
 
-#Install terraform version listed as parameter in yml.
   - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
     displayName: "Install Terraform ${{ parameters.TERRAFORM_VERSION }}"
     inputs:
@@ -102,6 +116,9 @@ steps:
         workingDirectory: ${{ parameters.TERRAFORM_PATH }}
         enabled: true
         env:
+          TF_VAR_short: ${{ parameters.SHORTHAND_PROJECT_NAME }}
+          TF_VAR_env: ${{ parameters.SHORTHAND_ENVIRONMENT }}
+          TF_VAR_loc: ${{ parameters.SHORTHAND_LOCATION_NAME }}
 
           TF_VAR_TERRAFORM_STORAGE_RG_NAME: ${{ parameters.TERRAFORM_STORAGE_RG_NAME }}
           TF_VAR_TERRAFORM_STORAGE_ACCOUNT_NAME: ${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}
@@ -176,6 +193,9 @@ steps:
         workingDirectory: ${{ parameters.TERRAFORM_PATH }}
         enabled: true
         env:
+          TF_VAR_short: ${{ parameters.SHORTHAND_PROJECT_NAME }}
+          TF_VAR_env: ${{ parameters.SHORTHAND_ENVIRONMENT }}
+          TF_VAR_loc: ${{ parameters.SHORTHAND_LOCATION_NAME }}
 
           TF_VAR_TERRAFORM_STORAGE_RG_NAME: ${{ parameters.TERRAFORM_STORAGE_RG_NAME }}
           TF_VAR_TERRAFORM_STORAGE_ACCOUNT_NAME: ${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}
@@ -211,6 +231,9 @@ steps:
         continueOnError: false
         enabled: true
         env:
+          TF_VAR_short: ${{ parameters.SHORTHAND_PROJECT_NAME }}
+          TF_VAR_env: ${{ parameters.SHORTHAND_ENVIRONMENT }}
+          TF_VAR_loc: ${{ parameters.SHORTHAND_LOCATION_NAME }}
 
           TF_VAR_TERRAFORM_STORAGE_RG_NAME: ${{ parameters.TERRAFORM_STORAGE_RG_NAME }}
           TF_VAR_TERRAFORM_STORAGE_ACCOUNT_NAME: ${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}
@@ -246,6 +269,9 @@ steps:
         continueOnError: false
         enabled: true
         env:
+          TF_VAR_short: ${{ parameters.SHORTHAND_PROJECT_NAME }}
+          TF_VAR_env: ${{ parameters.SHORTHAND_ENVIRONMENT }}
+          TF_VAR_loc: ${{ parameters.SHORTHAND_LOCATION_NAME }}
 
           TF_VAR_TERRAFORM_STORAGE_RG_NAME: ${{ parameters.TERRAFORM_STORAGE_RG_NAME }}
           TF_VAR_TERRAFORM_STORAGE_ACCOUNT_NAME: ${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}
