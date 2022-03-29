@@ -49,6 +49,7 @@ resources:
     - repository: azure-naming-convention
       type: github
       name: libre-devops/azure-naming-convention
+      endpoint: github_authgrant
 
 stages:
   - stage: dev
