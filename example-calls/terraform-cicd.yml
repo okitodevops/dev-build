@@ -46,7 +46,7 @@ pool:
 resources:
   repositories:
 
-    - repository: azure-naming-convention
+    - repository: libre-devops/azure-naming-convention
       type: github
       name: libre-devops/azure-naming-convention
       endpoint: github_authgrant
@@ -72,7 +72,7 @@ stages:
               TERRAFORM_PATH: ${{ parameters.TERRAFORM_PATH }}
               TERRAFORM_VERSION: ${{ parameters.TERRAFORM_VERSION }}
               TERRAFORM_DESTROY: ${{ parameters.TERRAFORM_DESTROY }}
-              TERRAFORM_STORAGE_RG_NAME: $(SpokeSaRgName) # Variables pulled from keyvault
+              TERRAFORM_STORAGE_RG_NAME: $(SpokeSaRgName)
               TERRAFORM_STORAGE_ACCOUNT_NAME: $(SpokeSaName)
               TERRAFORM_BLOB_CONTAINER_NAME: $(SpokeSaBlobContainerName)
               TERRAFORM_STORAGE_KEY: $(SpokeSaPrimaryKey)
