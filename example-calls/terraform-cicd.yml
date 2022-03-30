@@ -23,11 +23,6 @@ parameters:
     default: "lbdo"
     displayName: "Shorthand Project a.k.a ${infix}"
 
-  - name: SHORTHAND_ENVIRONMENT_NAME
-    type: string
-    default: "$(System.StageName)"
-    displayName: "Shorthand environment, e.g. dev, tst, prd, default is the stage of the pipeline"
-
   - name: SHORTHAND_LOCATION_NAME
     type: string
     default: "euw"
