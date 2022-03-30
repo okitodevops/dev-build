@@ -67,7 +67,7 @@ pool:
 
 stages:
   - stage: "${{ parameters.SHORTHAND_ENVIRONMENT_NAME }}"
-    displayName: "${{ parameters.SHORTHAND_ENVIRONMENT }} Stage"
+    displayName: "${{ parameters.SHORTHAND_ENVIRONMENT_NAME }} Stage"
     jobs:
       - job: Terraform_Build
         workspace:
