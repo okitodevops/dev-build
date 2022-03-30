@@ -38,6 +38,13 @@ parameters:
 variables:
   - group: "svp-kv-lbdo-euw-tst-mgt-01"
 
+resources:
+  repositories:
+  - repository: azure-naming-convention
+    type: github
+    endpoint: github_authgrant
+    name: libre-devops/azure-naming-convention
+
 pool:
   name: Azure Pipelines
   vmImage: ubuntu-latest
