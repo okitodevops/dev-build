@@ -102,8 +102,8 @@ steps:
                 
           terraform init `
           -backend-config="storage_account_name=${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}" `
-          -backend-config="container_name=$(TerraformContainerName)" `
-          -backend-config="access_key=$(SetVariables.TerraformStorageKey)" `
+          -backend-config="container_name=${{ parameters.TERRAFORM_BLOB_CONTAINER_NAME }}" `
+          -backend-config="access_key=${{ parameters.TERRAFORM_STORAGE_KEY }}" `
           -backend-config="key=${{ parameters.TERRAFORM_STATE_NAME }}" ; `
           
           Write-Output "${{ parameters.TERRAFORM_WORKSPACE_NAME }}" > .terraform/environment ; `
@@ -177,8 +177,8 @@ steps:
                 
           terraform init `
           -backend-config="storage_account_name=${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}" `
-          -backend-config="container_name=$(TerraformContainerName)" `
-          -backend-config="access_key=$(SetVariables.TerraformStorageKey)" `
+          -backend-config="container_name=${{ parameters.TERRAFORM_BLOB_CONTAINER_NAME }}" `
+          -backend-config="access_key=${{ parameters.TERRAFORM_STORAGE_KEY }}" `
           -backend-config="key=${{ parameters.TERRAFORM_STATE_NAME }}" ; `
           
           Write-Output "${{ parameters.TERRAFORM_WORKSPACE_NAME }}" > .terraform/environment ; `
@@ -216,8 +216,8 @@ steps:
                 
           terraform init `
           -backend-config="storage_account_name=${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}" `
-          -backend-config="container_name=$(TerraformContainerName)" `
-          -backend-config="access_key=$(SetVariables.TerraformStorageKey)" `
+          -backend-config="container_name=${{ parameters.TERRAFORM_BLOB_CONTAINER_NAME }}" `
+          -backend-config="access_key=${{ parameters.TERRAFORM_STORAGE_KEY }}" `
           -backend-config="key=${{ parameters.TERRAFORM_STATE_NAME }}" ; `
           
           Write-Output "${{ parameters.TERRAFORM_WORKSPACE_NAME }}" > .terraform/environment ; `
@@ -252,8 +252,8 @@ steps:
                 
           terraform init `
           -backend-config="storage_account_name=${{ parameters.TERRAFORM_STORAGE_ACCOUNT_NAME }}" `
-          -backend-config="container_name=$(TerraformContainerName)" `
-          -backend-config="access_key=$(SetVariables.TerraformStorageKey)" `
+          -backend-config="container_name=${{ parameters.TERRAFORM_BLOB_CONTAINER_NAME }}" `
+          -backend-config="access_key=${{ parameters.TERRAFORM_STORAGE_KEY }}" `
           -backend-config="key=${{ parameters.TERRAFORM_STATE_NAME }}" ; `
           
           Write-Output "${{ parameters.TERRAFORM_WORKSPACE_NAME }}" > .terraform/environment ; `

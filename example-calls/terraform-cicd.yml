@@ -22,7 +22,7 @@ parameters:
 
   - name: TERRAFORM_PATH
     type: string
-    default: "$(Build.SourcesDirectory)/azure-pipelines-module-development-build/terraform"
+    default: "$(Build.SourcesDirectory)/$(Build.RepositoryName)/terraform"
     displayName: "What is the path to your terraform code?"
 
   - name: TERRAFORM_VERSION
@@ -40,6 +40,7 @@ variables:
 
 resources:
   repositories:
+
   - repository: azure-naming-convention
     type: github
     endpoint: github_service_connection
