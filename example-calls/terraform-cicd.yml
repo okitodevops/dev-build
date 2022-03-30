@@ -60,7 +60,6 @@ stages:
         steps:
 
           - checkout: self
-          - checkout: github://libre-devops/azure-naming-convention
 
           - template: /templates/terraform-cicd-template.yml
             parameters:
