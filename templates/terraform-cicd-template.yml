@@ -94,8 +94,6 @@ steps:
     enabled: true
 
   - ${{ if eq(parameters.TERRAFORM_DESTROY, false) }}:
-      - pwsh: |
-          ls ; cd $(Build.SourcesDirectory) ; ls
 
       - pwsh: |
           New-Item -Path . -Name .terraform -ItemType "Directory" -Force ; `
@@ -119,7 +117,7 @@ steps:
         enabled: true
         env:
           TF_VAR_short: ${{ parameters.SHORTHAND_PROJECT_NAME }}
-          TF_VAR_env: ${{ parameters.SHORTHAND_LOCATION_NAME }}
+          TF_VAR_env: ${{ parameters.SHORTHAND_ENVIRONMENT_NAME }}
           TF_VAR_loc: ${{ parameters.SHORTHAND_LOCATION_NAME }}
 
           TF_VAR_TERRAFORM_STORAGE_RG_NAME: ${{ parameters.TERRAFORM_STORAGE_RG_NAME }}
