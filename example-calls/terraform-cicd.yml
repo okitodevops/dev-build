@@ -6,7 +6,7 @@ trigger: none
 parameters:
 
   - name: SHORTHAND_ENVIRONMENT_NAME
-    default: dev
+    default: tst
     displayName: "Check box to run plan and run a Destroy"
     type: string
     values:
