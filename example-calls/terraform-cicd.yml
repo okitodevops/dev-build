@@ -42,7 +42,7 @@ resources:
   repositories:
   - repository: azure-naming-convention
     type: github
-    endpoint: github_authgrant
+    endpoint: github_service_connection
     name: libre-devops/azure-naming-convention
 
 pool:
