@@ -44,6 +44,7 @@ resources:
     type: github
     endpoint: github_service_connection
     name: libre-devops/azure-naming-convention
+    ref: dev
 
 pool:
   name: Azure Pipelines
