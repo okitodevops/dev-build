@@ -94,6 +94,8 @@ steps:
     enabled: true
 
   - ${{ if eq(parameters.TERRAFORM_DESTROY, false) }}:
+      - pwsh: |
+          ls ; cd $(Build.SourcesDirectory) ; ls
 
       - pwsh: |
           New-Item -Path . -Name .terraform -ItemType "Directory" -Force ; `

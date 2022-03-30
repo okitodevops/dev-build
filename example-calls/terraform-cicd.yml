@@ -45,6 +45,12 @@ resources:
     endpoint: github_service_connection
     name: libre-devops/azure-naming-convention
 
+  - repository: azure-pipelines-module-development-build
+    type: github
+    endpoint: github_service_connection
+    name: libre-devops/azure-pipelines-module-development-build
+    ref: dev
+
 pool:
   name: Azure Pipelines
   vmImage: ubuntu-latest
@@ -61,7 +67,7 @@ stages:
 
           - checkout: self
 
-          - template: /templates/terraform-cicd-template.yml
+          - template: /templates/terraform-cicd-template.yml@azure-pipelines-module-development-build
             parameters:
               SHORTHAND_PROJECT_NAME: ${{ parameters.SHORTHAND_PROJECT_NAME }}
               SHORTHAND_ENVIRONMENT_NAME: ${{ parameters.SHORTHAND_ENVIRONMENT_NAME }}
