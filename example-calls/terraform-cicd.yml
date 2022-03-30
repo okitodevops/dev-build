@@ -44,13 +44,13 @@ resources:
   - repository: azure-naming-convention
     type: github
     endpoint: github_service_connection
-    name: libre-devops/azure-naming-convention
+    name: azure-naming-convention
     ref: main
 
   - repository: azure-pipelines-module-development-build
     type: github
     endpoint: github_service_connection
-    name: libre-devops/azure-pipelines-module-development-build
+    name: azure-pipelines-module-development-build
     ref: dev
 
 pool:
