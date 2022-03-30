@@ -44,6 +44,7 @@ resources:
     type: github
     endpoint: github_service_connection
     name: libre-devops/azure-naming-convention
+    ref: main
 
   - repository: azure-pipelines-module-development-build
     type: github
@@ -66,6 +67,7 @@ stages:
         steps:
 
           - checkout: self
+          - checkout: azure-naming-convention
 
           - template: /templates/terraform-cicd-template.yml@azure-pipelines-module-development-build
             parameters:
