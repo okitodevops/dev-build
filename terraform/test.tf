@@ -23,23 +23,27 @@ resource "azurerm_resource_group" "test_rg" {
   name     = each.value // makes 2 rgs, prd-vm and prd-biscuit
 }
 
-module "vnet" {
-  source = "./test-modules/terraform-azurerm-network"
-
-  rg_name         = element(azurerm_resource_group.test_rg.name, 0)
-  location        = local.location
-  address_space   = ["10.0.0.0/16"]
-  subnet_prefixes = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  subnet_names    = ["subnet1", "subnet2", "subnet3"]
-
-  subnet_service_endpoints = {
-    subnet2 = ["Microsoft.Storage", "Microsoft.Sql"],
-    subnet3 = ["Microsoft.AzureActiveDirectory"]
-  }
-
-  tags = {
-    environment = "dev"
-    costcenter  = "it"
-  }
-
+output "rg_name" {
+  value = azurerm_resource_group.test_rg[each.key].name
 }
+
+#module "vnet" {
+#  source = "./test-modules/terraform-azurerm-network"
+#
+#  rg_name         = azurerm_resource_group.test_rg[each.key].name
+#  location        = local.location
+#  address_space   = ["10.0.0.0/16"]
+#  subnet_prefixes = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+#  subnet_names    = ["subnet1", "subnet2", "subnet3"]
+#
+#  subnet_service_endpoints = {
+#    subnet2 = ["Microsoft.Storage", "Microsoft.Sql"],
+#    subnet3 = ["Microsoft.AzureActiveDirectory"]
+#  }
+#
+#  tags = {
+#    environment = "dev"
+#    costcenter  = "it"
+#  }
+#
+#}
