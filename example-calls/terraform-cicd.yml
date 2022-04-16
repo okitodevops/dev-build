@@ -44,6 +44,11 @@ parameters:
     default: false
     displayName: "Check box to run plan and run a Destroy"
     type: boolean
+  
+  - name: TERRAFORM_PLAN_ONLY
+    default: true
+    displayName: "Check box to run plan and run a Destroy"
+    type: boolean
 
 # Declare variable group to pass variables to parameters, in this case, a libre-devops keyvault which is using a service principle for authentication
 variables:
@@ -94,6 +99,7 @@ stages:
               TERRAFORM_PATH: ${{ parameters.TERRAFORM_PATH }}
               TERRAFORM_VERSION: ${{ parameters.TERRAFORM_VERSION }}
               TERRAFORM_DESTROY: ${{ parameters.TERRAFORM_DESTROY }}
+              TERRAFORM_PLAN_ONLY: ${{ parameters.TERRAFORM_PLAN_ONLY }}
               TERRAFORM_STORAGE_RG_NAME: $(SpokeSaRgName) # Key Vault variable
               TERRAFORM_STORAGE_ACCOUNT_NAME: $(SpokeSaName)
               TERRAFORM_BLOB_CONTAINER_NAME: $(SpokeSaBlobContainerName)
