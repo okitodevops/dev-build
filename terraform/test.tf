@@ -28,7 +28,7 @@ output "rg_name" {
 }
 
 output "first_key" {
-  value = lookup(element(azurerm_resource_group.test_rg.*, 0), "key0", 0)
+  value = element(element(azurerm_resource_group.test_rg.*, 0), 0)
 }
 
 #module "vnet" {
