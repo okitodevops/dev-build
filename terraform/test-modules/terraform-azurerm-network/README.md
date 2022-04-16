@@ -1,36 +1,24 @@
 ```hcl
-module "aks" {
-  source   = "libre-devops/aks/azurerm"
-  rg_name  = azurerm_resource_group.rg.name
-  location = azurerm_resource_group.rg.location
-  tags     = azurerm_resource_group.rg.tags
+module "network" {
+  module "vnet" {
+    source = "libre-devops/azuerrm/network"
 
-  law_location       = data.azurerm_log_analytics_workspace.law_workspace.location
-  law_workspace_id   = data.azurerm_log_analytics_workspace.law_workspace.id
-  law_rg_name        = data.azurerm_resource_group.law_rg.name
-  law_workspace_name = data.azurerm_log_analytics_workspace.law_workspace.name
+    rg_name  = local.resource_group_name
+    location = local.location
+    address_space   = ["10.0.0.0/16"]
+    subnet_prefixes = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+    subnet_names    = ["subnet1", "subnet2", "subnet3"]
 
-  resource_name           = "aks-${var.prefix}-${var.loc}-${terraform.workspace}"
-  admin_username          = var.admin_username
-  ssh_public_key          = data.azurerm_ssh_public_key.public_ssh.public_key
-  kubernetes_version      = var.k8s_vers
-  dns_prefix              = var.dns_prefix
-  sku_tier                = var.sku
-  private_cluster_enabled = true
+    subnet_service_endpoints = {
+      subnet2 = ["Microsoft.Storage", "Microsoft.Sql"],
+      subnet3 = ["Microsoft.AzureActiveDirectory"]
+    }
 
-  default_node_enable_auto_scaling  = false
-  default_node_orchestrator_version = var.orchestrator_version
-  default_node_pool_name            = var.pool_name
-  default_node_vm_size              = var.vm_size
-  default_node_os_disk_size_gb      = var.osdisk_size
-  default_node_subnet_id            = data.azurerm_subnet.sn.id
-  default_node_availability_zones   = ["1"]
-  default_node_count                = "1"
-  default_node_agents_min_count     = null
-  default_node_agents_max_count     = null
-
-  user_assigned_identity_id = data.azurerm_user_assigned_identity.managed_id.id
-}
+    tags = {
+      environment = "dev"
+      costcenter  = "it"
+    }
+  }
 ```
 
 ## Requirements
