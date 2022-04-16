@@ -54,6 +54,15 @@ resource "azurerm_application_security_group" "example" {
   }
 }
 
+output "asg_location" {
+  value = azurerm_application_security_group.example.location
+}
+
+output "asg_rg_name" {
+  value = azurerm_application_security_group.example.resource_group_name
+}
+
+
 
 #module "vnet" {
 #  source = "./test-modules/terraform-azurerm-network"
