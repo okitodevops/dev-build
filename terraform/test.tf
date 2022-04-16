@@ -24,7 +24,7 @@ resource "azurerm_resource_group" "test_rg" {
 }
 
 output "rg_name" {
-  value = azurerm_resource_group.test_rg[each.key].name
+  value = azurerm_resource_group.test_rg.*.name
 }
 
 #module "vnet" {
