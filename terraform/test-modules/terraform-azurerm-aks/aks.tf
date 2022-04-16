@@ -75,6 +75,10 @@ resource "azurerm_kubernetes_cluster" "main_aks" {
     log_analytics_workspace_id = var.law_workspace_id
   }
 
+  role_based_access_control {
+    enabled = true
+  }
+
   network_profile {
     network_plugin     = var.network_plugin
     network_policy     = var.network_policy
