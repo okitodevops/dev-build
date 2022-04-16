@@ -1,13 +1,13 @@
 variable "environment" {
-  default = "prd"
-  type = "string"
+  default     = "prd"
+  type        = string
   description = "Used as an alterative to terraform.workspace"
 }
 
 locals {
 
   names = {
-    key0 = var.environment // prd
+    key0 = var.environment         // prd
     key1 = "${var.environment}-vm" // prd-vm
     key2 = "prd-biscuit"
     key3 = "tst_pizza"
