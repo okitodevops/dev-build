@@ -28,7 +28,9 @@ output "rg_name" {
 }
 
 output "rg_name_values" {
-  value = element(values(azurerm_resource_group.test_rg[*]), 0)
+  value = {
+      for key, value in element(azurerm_resource_group.test_rg[*], 0) : key => value.name
+  }
 }
 
 
