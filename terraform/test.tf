@@ -27,6 +27,10 @@ output "rg_name" {
   value = element(azurerm_resource_group.test_rg[*], 0)
 }
 
+output "rg_name_values" {
+  value = element(values(azurerm_resource_group.test_rg[*]), 0)
+}
+
 
 #module "vnet" {
 #  source = "./test-modules/terraform-azurerm-network"
