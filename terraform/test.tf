@@ -24,12 +24,9 @@ resource "azurerm_resource_group" "test_rg" {
 }
 
 output "rg_name" {
-  value = azurerm_resource_group.test_rg.*
+  value = azurerm_resource_group.test_rg[*].0
 }
 
-output "first_key" {
-  value = lookup(azurerm_resource_group.test_rg.*[1], "key0", 0)
-}
 
 #module "vnet" {
 #  source = "./test-modules/terraform-azurerm-network"
