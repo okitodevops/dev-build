@@ -24,7 +24,7 @@ resource "azurerm_resource_group" "test_rg" {
 }
 
 module "vnet" {
-  source = "test-modules/terraform-azurerm-network"
+  source = "./test-modules/terraform-azurerm-network"
 
   rg_name         = element(azurerm_resource_group.test_rg.name, 0)
   location        = local.location
