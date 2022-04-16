@@ -23,16 +23,6 @@ resource "azurerm_resource_group" "test_rg" {
   name     = each.value // makes 2 rgs, prd-vm and prd-biscuit
 }
 
-output "rg_name" {
-  value = element(azurerm_resource_group.test_rg[*], 0)
-}
-
-output "rg_names" {
-  value = {
-      for key, value in element(azurerm_resource_group.test_rg[*], 0) : key => value.name
-  }
-}
-
 // Use local or output from within a module to keep tidy, you could do this in-line but its a bad idea
 locals {
   resource_group_locations = {
