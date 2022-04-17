@@ -29,7 +29,7 @@ module "network" {
 }
 
 module "nsg" {
-  source = "../../terraform-azurerm-nsg"
+  source = "registry.terraform.io/libre-devops/nsg/azurerm"
 
   rg_name   = module.rg.rg_name
   location  = module.rg.rg_location
@@ -63,7 +63,7 @@ resource "azurerm_network_interface" "nic" {
 }
 
 module "win_vm" {
-  source = "../../terraform-azurerm-windows-vm"
+  source = "github.com/libre-devops/terraform-azurerm-windows-vm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
