@@ -26,5 +26,4 @@ module "network" {
   }
 
   tags = local.tags
-
 }

@@ -114,5 +114,5 @@ stages:
               TERRAFORM_COMPLIANCE_PATH: "$(Build.SourcesDirectory)/azure-naming-convention/az-terraform-compliance-policy"
               AZURE_TARGET_CLIENT_ID: $(SpokeSvpClientId)
               AZURE_TARGET_CLIENT_SECRET: $(SpokeSvpClientSecret)
-              AZURE_TARGET_TENANT_ID: $(SpokeSvpTenantId)
+              AZURE_TARGET_TENANT_ID: $(SpokeTenantId)
               AZURE_TARGET_SUBSCRIPTION_ID: $(SpokeSubID)
