@@ -40,7 +40,7 @@ module "nsg" {
 }
 
 locals {
-  vm_amount = 2
+  vm_amount = 7
 }
 
 module "win_vm" {
