@@ -55,7 +55,6 @@ parameters:
     displayName: "Check box to run plan ONLY and never run apply"
     type: boolean
 
-
 # Declare variable group to pass variables to parameters, in this case, a libre-devops keyvault which is using a service principle for authentication
 variables:
   - group: ${{ parameters.VARIABLE_GROUP_NAME }}
