@@ -39,6 +39,11 @@ parameters:
     default: "1.1.7"
     displayName: "Which version of Terraform should be installed?"
 
+  - name: VARIABLE_GROUP_NAME
+    type: string
+    default: "svp-kv-ldo-euw-dev-mgt-01"
+    displayName: "Enter the variable group which contains your authentication information"
+
 # This variable sets up a condition in the template, if set to true, it will run terraform plan -destroy instead of the normal plan
   - name: TERRAFORM_DESTROY
     default: false
@@ -50,9 +55,10 @@ parameters:
     displayName: "Check box to run plan ONLY and never run apply"
     type: boolean
 
+
 # Declare variable group to pass variables to parameters, in this case, a libre-devops keyvault which is using a service principle for authentication
 variables:
-  - group: "svp-kv-lbdo-euw-tst-mgt-01"
+  - group: ${{ parameters.VARIABLE_GROUP_NAME }}
 
 # Sets what repos need cloned, for example, a library repo for modules and a poly-repo for target code
 resources:
