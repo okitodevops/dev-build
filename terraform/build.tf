@@ -56,7 +56,7 @@ resource "azurerm_network_interface" "nic" {
     name                          = "vm${var.short}${var.loc}${terraform.workspace}${format("%02d", count.index + 1)}-nic-ipconfig"
     primary                       = true
     private_ip_address_allocation = "dynamic"
-    subnet_id                     = element(module.network.subnets_ids, 0)
+    subnet_id                     = element(values(module.network.subnets_ids), 0)
   }
   tags = module.rg.rg_tags
 
@@ -73,7 +73,7 @@ module "win_vm" {
   location = module.rg.rg_location
 
   vm_amount          = local.vm_amount
-  vm_hostname        = "vm${var.short}${var.loc}${terraform.workspace}${format("%02d", count.index + 1)}"
+  vm_hostname        = "vm${var.short}${var.loc}${terraform.workspace}"
   vm_size            = "Standard_B2ms"
   vm_os_simple       = "WindowsServer2019"
   vm_os_disk_size_gb = "127"
