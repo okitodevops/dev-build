@@ -7,7 +7,7 @@ trigger: none
 parameters:
 
   - name: SHORTHAND_ENVIRONMENT_NAME
-    default: tst
+    default: dev
     displayName: "What is the shorthand name for this environment?"
     type: string
     values:
