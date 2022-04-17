@@ -43,7 +43,6 @@ locals {
   vm_amount = 2
 }
 
-
 module "win_vm" {
   source = "github.com/libre-devops/terraform-azurerm-windows-vm"
 
