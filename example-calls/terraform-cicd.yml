@@ -47,7 +47,7 @@ parameters:
 # This variable sets up a condition in the template, if set to true, it will run terraform plan -destroy instead of the normal plan
   - name: TERRAFORM_DESTROY
     default: false
-    displayName: "Check box to run plan and run a Destroy"
+    displayName: "Check box to run a Destroy"
     type: boolean
   
   - name: TERRAFORM_PLAN_ONLY
