@@ -34,7 +34,7 @@ module "nsg" {
   rg_name   = module.rg.rg_name
   location  = module.rg.rg_location
   nsg_name  = "nsg-${var.short}-${var.loc}-${terraform.workspace}"
-  subnet_id = element(module.network.subnets_ids, 0)
+  subnet_id = element(values(module.network.subnets_ids), 0)
 
   tags = module.rg.rg_tags
 }
@@ -55,7 +55,7 @@ resource "azurerm_network_interface" "nic" {
   ip_configuration {
     name                          = "vm${var.short}${var.loc}${terraform.workspace}${format("%02d", count.index + 1)}-nic-ipconfig"
     primary                       = true
-    private_ip_address_allocation = "dynamic"
+    private_ip_address_allocation = "Dynamic"
     subnet_id                     = element(values(module.network.subnets_ids), 0)
   }
   tags = module.rg.rg_tags
