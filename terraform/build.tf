@@ -43,28 +43,6 @@ locals {
   vm_amount = 2
 }
 
-resource "azurerm_network_interface" "nic" {
-  count = local.vm_amount
-
-  name                = "vm${var.short}${var.loc}${terraform.workspace}${format("%02d", count.index + 1)}-nic"
-  resource_group_name = module.rg.rg_name
-  location            = module.rg.rg_location
-
-  enable_accelerated_networking = false
-
-  ip_configuration {
-    name                          = "vm${var.short}${var.loc}${terraform.workspace}${format("%02d", count.index + 1)}-nic-ipconfig"
-    primary                       = true
-    private_ip_address_allocation = "Dynamic"
-    subnet_id                     = element(values(module.network.subnets_ids), 0)
-  }
-  tags = module.rg.rg_tags
-
-  timeouts {
-    create = "5m"
-    delete = "10m"
-  }
-}
 
 module "win_vm" {
   source = "github.com/libre-devops/terraform-azurerm-windows-vm"
@@ -81,10 +59,7 @@ module "win_vm" {
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
 
-  nic_ids = [
-    azurerm_network_interface.nic[count.index].id
-  ]
-
+  subnet_id            = element(values(module.network.subnets_ids), 0)
   availability_zone    = "alternate"
   storage_account_type = "Standard_LRS"
   identity_type        = "SystemAssigned"
