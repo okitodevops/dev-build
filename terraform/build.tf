@@ -33,7 +33,7 @@ module "nsg" {
 
   rg_name   = module.rg.rg_name
   location  = module.rg.rg_location
-  nsg_name  = "nsg-${var.short}-${var.loc}-${terraform.workspace}"
+  nsg_name  = "nsg-build-${var.short}-${var.loc}-${terraform.workspace}-01"
   subnet_id = element(values(module.network.subnets_ids), 0)
 
   tags = module.rg.rg_tags
