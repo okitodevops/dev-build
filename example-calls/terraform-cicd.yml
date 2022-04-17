@@ -21,7 +21,7 @@ parameters:
 
   - name: SHORTHAND_PROJECT_NAME
     type: string
-    default: "lbdo"
+    default: "ldo"
     displayName: "Shorthand Project e.g. lbdo for libredevops"
 
   - name: SHORTHAND_LOCATION_NAME
