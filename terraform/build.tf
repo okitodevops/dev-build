@@ -84,7 +84,7 @@ module "win_vm" {
   vm_os_simple       = "WindowsServer2019"
   vm_os_disk_size_gb = "127"
 
-  asg_name = "asg-test" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
@@ -96,19 +96,6 @@ module "win_vm" {
 
   tags = module.rg.rg_tags
 }
-
-output "test-regex" {
-  value = regexall("[a-z]+", "vmldoeuwdev01")
-}
-
-output "vm_name_unsplit" {
-  value = element(module.win_vm.vm_name, 0)
-}
-
-output "vm_regex" {
-  value = element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)
-}
-
 
 // Allow Inbound Access from Bastion
 resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {

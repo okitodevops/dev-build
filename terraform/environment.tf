@@ -27,7 +27,3 @@ variable "Regions" {
 locals {
   location = lookup(var.Regions, var.loc, "UK South")
 }
-
-output "location_output" {
-  value = local.location
-}
