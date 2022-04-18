@@ -40,7 +40,7 @@ module "nsg" {
 }
 
 // Fix error which causes security errors to be flagged by TFSec, public egress is needed for Azure Bastion to function, its kind of the point :)
-#tfsec:ignore:azure-network-no-public-egress[destination_address_prefix="*"]
+#tfsec:ignore:azure-network-no-public-egress
 module "bastion" {
   source = "registry.terraform.io/libre-devops/bastion/azurerm"
 
