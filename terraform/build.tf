@@ -98,7 +98,7 @@ module "win_vm" {
 }
 
 module "lnx_vm" {
-  source = "../../terraform-azurerm-linux-vm"
+  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
