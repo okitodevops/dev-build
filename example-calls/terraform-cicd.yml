@@ -58,7 +58,7 @@ parameters:
   - name: CHECKOV_SKIP_TESTS
     type: string
     default: ""
-    displayName: "CheckOV tests to skip if comment skips don't work, should be string seperated commas, e.g. CKV_AZURE_50, CKV_AZURE_20.  All checks run if parameter is empty, empty by default"
+    displayName: "CheckOV tests to skip if comment skips don't work.  All checks run if parameter is empty, empty by default"
 
 # Declare variable group to pass variables to parameters, in this case, a libre-devops keyvault which is using a service principle for authentication
 variables:
