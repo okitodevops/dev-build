@@ -2,7 +2,7 @@ module "rg" {
   source = "registry.terraform.io/libre-devops/rg/azurerm"
 
   rg_name    = "rg-${var.short}-${var.loc}-${terraform.workspace}-build" // rg-ldo-euw-dev-build
-  location   = local.location // compares var.loc with the var.regions var to match a long-hand name, in this case, "euw", so "westeurope"
+  location   = local.location                                            // compares var.loc with the var.regions var to match a long-hand name, in this case, "euw", so "westeurope"
   lock_level = "CanNotDelete"
   tags       = local.tags
 }
@@ -34,7 +34,7 @@ module "nsg" {
   rg_name   = module.rg.rg_name
   location  = module.rg.rg_location
   nsg_name  = "nsg-build-${var.short}-${var.loc}-${terraform.workspace}-01" // nsg-build-ldo-euw-dev-01
-  subnet_id = element(values(module.network.subnets_ids), 0) // Adds NSG to sn1-vnet-ldo-euw-dev-01
+  subnet_id = element(values(module.network.subnets_ids), 0)                // Adds NSG to sn1-vnet-ldo-euw-dev-01
 
   tags = module.rg.rg_tags
 }
@@ -94,7 +94,7 @@ module "aks" {
   default_node_agents_min_count     = null
   default_node_agents_max_count     = null
 
-  identity = "UserAssigned"// Created with Libre DevOps PreRequisite Script
+  identity     = "UserAssigned" // Created with Libre DevOps PreRequisite Script
   identity_ids = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 }
 
@@ -116,7 +116,7 @@ module "win_vm" {
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
 
   subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-  availability_zone    = "alternate" // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
   storage_account_type = "Standard_LRS"
   identity_type        = "SystemAssigned"
 
