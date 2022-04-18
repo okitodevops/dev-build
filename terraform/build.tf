@@ -68,6 +68,8 @@ module "bastion" {
   tags = module.rg.rg_tags
 }
 
+// This module does not consider for log analytics oms agent, but tfsec warns anyway.  Code exists to enable it should you wish by check is tabled
+#tfsec:ignore:azure-container-logging
 module "aks" {
   source = "registry.terraform.io/libre-devops/aks/azurerm"
 
