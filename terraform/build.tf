@@ -44,7 +44,7 @@ locals {
 }
 
 module "bastion" {
-  source = "registry.terraform.io/libre-devops/nsg/azurerm"
+  source = "registry.terraform.io/libre-devops/bastion/azurerm"
 
 
   vnet_rg_name = module.network.vnet_rg_name
