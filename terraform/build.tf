@@ -101,6 +101,10 @@ output "test-regex" {
   value = regexall("[a-z]+", "vmldoeuwdev01")
 }
 
+output "vm_name_unsplit" {
+  value = element(module.win_vm.vm_name, 0)
+}
+
 
 // Allow Inbound Access from Bastion
 resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
