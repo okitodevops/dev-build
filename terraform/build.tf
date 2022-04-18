@@ -84,6 +84,7 @@ module "aks" {
   dns_prefix              = "ldo"
   sku_tier                = "Free"
   private_cluster_enabled = true
+  enable_rbac             = true
 
   default_node_enable_auto_scaling  = false
   default_node_orchestrator_version = "1.22"
