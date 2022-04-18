@@ -134,6 +134,7 @@ module "run_command" {
   rg_name    = module.rg.rg_name
   vm_name    = element(module.win_vm.vm_name, 0)
   os_type    = "windows"
+  tags      = module.rg.rg_tags
 
   command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
 }
