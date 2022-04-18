@@ -127,11 +127,13 @@ module "win_vm" {
 }
 
 module "run_command" {
-  source   = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
-  location = module.rg.rg_location
-  rg_name  = module.rg.rg_name
-  vm_name  = element(values(module.win_vm.vm_name), 0)
-  os_type  = "windows"
+  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
+
+  depends_on = [module.rg, module.win_vm]
+  location   = module.rg.rg_location
+  rg_name    = module.rg.rg_name
+  vm_name    = element(module.win_vm.vm_name, 0)
+  os_type    = "windows"
 
   command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
 }
