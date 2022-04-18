@@ -55,6 +55,11 @@ parameters:
     displayName: "Check box to run plan ONLY and never run apply"
     type: boolean
 
+  - name: CHECKOV_SKIP_TESTS
+    type: string
+    default: ""
+    displayName: "CheckOV tests to skip if comment skips don't work, should be string seperated commas, e.g. CKV_AZURE_50, CKV_AZURE_20.  All checks run if parameter is empty, empty by default"
+
 # Declare variable group to pass variables to parameters, in this case, a libre-devops keyvault which is using a service principle for authentication
 variables:
   - group: ${{ parameters.VARIABLE_GROUP_NAME }}
@@ -116,3 +121,4 @@ stages:
               AZURE_TARGET_CLIENT_SECRET: $(SpokeSvpClientSecret)
               AZURE_TARGET_TENANT_ID: $(SpokeTenantId)
               AZURE_TARGET_SUBSCRIPTION_ID: $(SpokeSubID)
+              CHECKOV_SKIP_TESTS: ${{ parameters.CHECKOV_SKIP_TESTS }}
