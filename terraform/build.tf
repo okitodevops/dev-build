@@ -65,7 +65,7 @@ module "bastion" {
   bas_host_name          = "bas-${var.short}-${var.loc}-${terraform.workspace}-01"
   bas_host_location      = module.rg.rg_location
   bas_host_rg_name       = module.rg.rg_name
-  bas_host_ipconfig_name = "${module.bastion.bas_hostname}-ipconfig"
+  bas_host_ipconfig_name = "bas-${var.short}-${var.loc}-${terraform.workspace}-01-ipconfig"
 
   tags = module.rg.rg_tags
 }
