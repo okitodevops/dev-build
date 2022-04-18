@@ -107,7 +107,7 @@ stages:
           - checkout: azure-naming-convention
 
           # Remotely fetch pipeline template, in this case, I am using one in my development repo.
-          - template: /.azurepipelines/.templates/terraform-cicd-template.yml@aterraform-azdo-pipeline-template
+          - template: /.azurepipelines/.templates/terraform-cicd-template.yml@terraform-azdo-pipeline-template
             parameters:
               SHORTHAND_PROJECT_NAME: ${{ parameters.SHORTHAND_PROJECT_NAME }} # Parameters entered in YAML
               SHORTHAND_ENVIRONMENT_NAME: ${{ parameters.SHORTHAND_ENVIRONMENT_NAME }}
