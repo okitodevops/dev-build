@@ -133,7 +133,7 @@ module "run_command" {
   vm_name  = element(values(module.win_vm.vm_name), 0)
   os_type  = "windows"
 
-  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git"
+  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
 }
 
 module "lnx_vm" {
