@@ -97,19 +97,45 @@ module "win_vm" {
   tags = module.rg.rg_tags
 }
 
+module "lnx_vm" {
+  source = "../../terraform-azurerm-linux-vm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+
+  vm_amount          = 1
+  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}"
+  vm_size            = "Standard_B2ms"
+  vm_os_simple       = "Ubuntu20.04"
+  vm_os_disk_size_gb = "127"
+
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+
+  admin_username = "LibreDevOpsAdmin"
+  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
+  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
+
+  subnet_id            = element(values(module.network.subnets_ids), 0)
+  availability_zone    = "alternate"
+  storage_account_type = "Standard_LRS"
+  identity_type        = "SystemAssigned"
+
+  tags = module.rg.rg_tags
+}
+
 // Allow Inbound Access from Bastion
 resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
-  name                                       = "AllowBasSSHRDPInbound"
-  priority                                   = 400
-  direction                                  = "Inbound"
-  access                                     = "Allow"
-  protocol                                   = "Tcp"
-  source_port_range                          = "*"
-  destination_port_ranges                    = ["22", "3389"]
-  source_address_prefixes                    = module.bastion.bas_subnet_ip_range
-  destination_address_prefixes               = module.network.vnet_address_space
-  resource_group_name                        = module.rg.rg_name
-  network_security_group_name                = module.nsg.nsg_name
+  name                         = "AllowBasSSHRDPInbound"
+  priority                     = 400
+  direction                    = "Inbound"
+  access                       = "Allow"
+  protocol                     = "Tcp"
+  source_port_range            = "*"
+  destination_port_ranges      = ["22", "3389"]
+  source_address_prefixes      = module.bastion.bas_subnet_ip_range
+  destination_address_prefixes = module.network.vnet_address_space
+  resource_group_name          = module.rg.rg_name
+  network_security_group_name  = module.nsg.nsg_name
 }
 
 // If running locally, running this block will fetch your outbound public IP of your home/office/ISP/VPN and add it.  It will add the hosted agent etc if running from Microsoft/GitLab
@@ -119,15 +145,15 @@ data "http" "user_ip" {
 
 // Allow Inbound Access from Bastion
 resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
-  name                                       = "AllowBasSSHRDPFromHomeInbound"
-  priority                                   = 405
-  direction                                  = "Inbound"
-  access                                     = "Allow"
-  protocol                                   = "Tcp"
-  source_port_range                          = "*"
-  destination_port_ranges                    = ["22", "3389"]
-  source_address_prefixes                    = [chomp(data.http.user_ip.body)]
-  destination_address_prefixes               = module.network.vnet_address_space
-  resource_group_name                        = module.rg.rg_name
-  network_security_group_name                = module.nsg.nsg_name
+  name                         = "AllowBasSSHRDPFromHomeInbound"
+  priority                     = 405
+  direction                    = "Inbound"
+  access                       = "Allow"
+  protocol                     = "Tcp"
+  source_port_range            = "*"
+  destination_port_ranges      = ["22", "3389"]
+  source_address_prefixes      = [chomp(data.http.user_ip.body)]
+  destination_address_prefixes = module.network.vnet_address_space
+  resource_group_name          = module.rg.rg_name
+  network_security_group_name  = module.nsg.nsg_name
 }
