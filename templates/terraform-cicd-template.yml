@@ -186,8 +186,8 @@ steps:
 
          terraform show -json pipeline.plan > pipeline.plan.json ; `
 
-         checkov -f pipeline.plan.json --skip-test ${{ parameters.CHECKOV_SKIP_TESTS }}
-        displayName: 'CheckOV Check with skipped tests'
+         checkov -f pipeline.plan.json --skip-check ${{ parameters.CHECKOV_SKIP_TESTS }}
+        displayName: 'CheckOV Check with Skipped Tests'
         workingDirectory: "${{ parameters.TERRAFORM_PATH }}"
         continueOnError: false
         condition: not(eq('${{ parameters.CHECKOV_SKIP_TESTS }}', ' '))
@@ -265,7 +265,7 @@ steps:
          terraform show -json pipeline.plan > pipeline.plan.json ; `
 
          checkov -f pipeline.plan.json
-        displayName: 'CheckOV Check with skipped tests'
+        displayName: 'CheckOV Check with Skipped Tests'
         workingDirectory: "${{ parameters.TERRAFORM_PATH }}"
         continueOnError: false
         condition: eq('${{ parameters.CHECKOV_SKIP_TESTS }}', ' ')
@@ -276,7 +276,7 @@ steps:
 
          terraform show -json pipeline.plan > pipeline.plan.json ; `
 
-         checkov -f pipeline.plan.json --skip-test ${{ parameters.CHECKOV_SKIP_TESTS }}
+         checkov -f pipeline.plan.json --skip-check ${{ parameters.CHECKOV_SKIP_TESTS }}
         displayName: 'CheckOV Check'
         workingDirectory: "${{ parameters.TERRAFORM_PATH }}"
         continueOnError: false
