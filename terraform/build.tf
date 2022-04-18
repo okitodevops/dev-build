@@ -118,6 +118,14 @@ data "http" "user_ip" {
   url = "https://ipv4.icanhazip.com"
 }
 
+output "my_ip" {
+  value = data.http.user_ip
+}
+
+output "my_ip_chomp" {
+  value = chomp(data.http.user_ip)
+}
+
 // Allow Inbound Access from Bastion
 resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
   name                                       = "AllowBasSSHRDPFromHomeInbound"
