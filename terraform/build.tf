@@ -84,7 +84,7 @@ module "win_vm" {
   vm_os_simple       = "WindowsServer2019"
   vm_os_disk_size_gb = "127"
 
-  asg_name = "asg-vm${var.short}${var.loc}${terraform.workspace}"
+  asg_name = "asg-${regexall("[a-z]+", module.win_vm.vm_name)}-${var.short}-${var.loc}-${terraform.workspace}"
 
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
@@ -118,25 +118,17 @@ data "http" "user_ip" {
   url = "https://ipv4.icanhazip.com"
 }
 
-output "my_ip" {
-  value = data.http.user_ip.body
+// Allow Inbound Access from Bastion
+resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
+  name                                       = "AllowBasSSHRDPFromHomeInbound"
+  priority                                   = 405
+  direction                                  = "Inbound"
+  access                                     = "Allow"
+  protocol                                   = "Tcp"
+  source_port_range                          = "*"
+  destination_port_ranges                    = ["22", "3389"]
+  source_address_prefixes                    = [chomp(data.http.user_ip.body)]
+  destination_address_prefixes               = module.network.vnet_address_space
+  resource_group_name                        = module.rg.rg_name
+  network_security_group_name                = module.nsg.nsg_name
 }
-
-output "my_ip_chomp" {
-  value = chomp(data.http.user_ip.body)
-}
-
-#// Allow Inbound Access from Bastion
-#resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
-#  name                                       = "AllowBasSSHRDPFromHomeInbound"
-#  priority                                   = 405
-#  direction                                  = "Inbound"
-#  access                                     = "Allow"
-#  protocol                                   = "Tcp"
-#  source_port_range                          = "*"
-#  destination_port_ranges                    = ["22", "3389"]
-#  source_address_prefixes                    = chomp(data.http.user_ip.body)
-#  destination_address_prefixes               = module.network.vnet_address_space
-#  resource_group_name                        = module.rg.rg_name
-#  network_security_group_name                = module.nsg.nsg_name
-#}
