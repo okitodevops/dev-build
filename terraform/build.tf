@@ -104,7 +104,7 @@ resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
   priority                                   = 400
   direction                                  = "Inbound"
   access                                     = "Allow"
-  protocol                                   = "TCP"
+  protocol                                   = "Tcp"
   source_port_range                          = "*"
   destination_port_ranges                    = ["22", "3389"]
   source_address_prefixes                    = module.bastion.bas_subnet_ip_range
@@ -119,11 +119,11 @@ data "http" "user_ip" {
 }
 
 output "my_ip" {
-  value = data.http.user_ip
+  value = data.http.user_ip.body
 }
 
 output "my_ip_chomp" {
-  value = chomp(data.http.user_ip)
+  value = chomp(data.http.user_ip.body)
 }
 
 // Allow Inbound Access from Bastion
@@ -132,7 +132,7 @@ resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
   priority                                   = 405
   direction                                  = "Inbound"
   access                                     = "Allow"
-  protocol                                   = "TCP"
+  protocol                                   = "Tcp"
   source_port_range                          = "*"
   destination_port_ranges                    = ["22", "3389"]
   source_address_prefixes                    = chomp(data.http.user_ip)
