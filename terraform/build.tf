@@ -68,6 +68,11 @@ module "bastion" {
   tags = module.rg.rg_tags
 }
 
+#checkov:skip=CKV_AZURE_4:Monitoring can be enabled but is disabled by default
+#checkov:skip=CKV_AZURE_7:This module does not consider network policy
+#checkov:skip=CKV_AZURE_116:CheckOV has a false positive for this run
+#checkov:skip=CKV_AZURE_117:This module does not consider for disk encryption sets
+#checkov:skip=CKV_AZURE_141`:This module does not consider for admin account disabled by default
 // This module does not consider for log analytics oms agent, but tfsec warns anyway.  Code exists to enable it should you wish by check is tabled
 #tfsec:ignore:azure-container-logging
 module "aks" {
