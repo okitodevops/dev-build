@@ -43,8 +43,35 @@ locals {
   vm_amount = 1
 }
 
+module "bastion" {
+  source = "../../terraform-azurerm-bastion"
+
+
+  vnet_rg_name = module.network.vnet_rg_name
+  vnet_name    = module.network.vnet_name
+
+  bas_subnet_iprange = "10.0.0.4.0/28"
+
+  bas_nsg_name     = "nsg-bas-${var.short}-${var.loc}-${terraform.workspace}}-01"
+  bas_nsg_location = module.rg.rg_location
+  bas_nsg_rg_name  = module.rg.rg_name
+
+  bas_pip_name              = "pip-bas-${var.short}-${var.loc}-${terraform.workspace}-01"
+  bas_pip_location          = module.rg.rg_location
+  bas_pip_rg_name           = module.rg.rg_name
+  bas_pip_allocation_method = "Static"
+  bas_pip_sku               = "Standard"
+
+  bas_host_name          = "bas-${var.short}-${var.loc}-${terraform.workspace}-01"
+  bas_host_location      = module.rg.rg_location
+  bas_host_rg_name       = module.rg.rg_name
+  bas_host_ipconfig_name = "${module.bastion.bas_hostname}-ipconfig"
+
+  tags = module.rg.rg_tags
+}
+
 module "win_vm" {
-  source = "github.com/libre-devops/terraform-azurerm-windows-vm"
+  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
