@@ -84,7 +84,7 @@ module "win_vm" {
   vm_os_simple       = "WindowsServer2019"
   vm_os_disk_size_gb = "127"
 
-  asg_name = "asg-${regexall("[a-z]+", module.win_vm.vm_name)}-${var.short}-${var.loc}-${terraform.workspace}"
+  asg_name = "asg-${regexall("[a-z]+", element(values(module.win_vm.vm_name), 0))}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from name
 
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
