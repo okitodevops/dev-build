@@ -101,6 +101,10 @@ module "aks" {
   identity_ids  = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 }
 
+output "test" {
+  value = element(values(module.network.subnets_ids), 2)
+}
+
 module "win_vm" {
   source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
