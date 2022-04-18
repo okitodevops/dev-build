@@ -44,7 +44,7 @@ locals {
 }
 
 module "bastion" {
-  source = "github.com/libre-devops/terraform-azurerm-bastion"
+  source = "registry.terraform.io/libre-devops/nsg/azurerm"
 
 
   vnet_rg_name = module.network.vnet_rg_name
@@ -52,7 +52,7 @@ module "bastion" {
 
   bas_subnet_iprange = "10.0.0.4.0/28"
 
-  bas_nsg_name     = "nsg-bas-${var.short}-${var.loc}-${terraform.workspace}}-01"
+  bas_nsg_name     = "nsg-bas-${var.short}-${var.loc}-${terraform.workspace}-01"
   bas_nsg_location = module.rg.rg_location
   bas_nsg_rg_name  = module.rg.rg_name
 
