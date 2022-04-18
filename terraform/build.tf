@@ -94,8 +94,8 @@ module "aks" {
   default_node_agents_min_count     = null
   default_node_agents_max_count     = null
 
-  identity     = "UserAssigned" // Created with Libre DevOps PreRequisite Script
-  identity_ids = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
+  identity_type = "UserAssigned" // Created with Libre DevOps PreRequisite Script
+  identity_ids  = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 }
 
 module "win_vm" {
