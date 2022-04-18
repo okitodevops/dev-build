@@ -1,7 +1,7 @@
 module "rg" {
   source = "registry.terraform.io/libre-devops/rg/azurerm"
 
-  rg_name    = "rg-${var.short}-${var.loc}-${terraform.workspace}-build"
+  rg_name    = "rg-${var.short}-${var.loc}-${terraform.workspace}-build" // rg-ldo-euw-dev-build
   location   = local.location
   lock_level = "CanNotDelete"
   tags       = local.tags
@@ -13,7 +13,7 @@ module "network" {
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
 
-  vnet_name     = "vnet-${var.short}-${var.loc}-${terraform.workspace}-01"
+  vnet_name     = "vnet-${var.short}-${var.loc}-${terraform.workspace}-01" // vnet-ldo-euw-dev-01
   vnet_location = module.network.vnet_location
 
   address_space   = ["10.0.0.0/16"]
