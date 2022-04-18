@@ -88,13 +88,14 @@ module "aks" {
   default_node_pool_name            = "lbdo-pool"
   default_node_vm_size              = "Standard_B2ms"
   default_node_os_disk_size_gb      = "127"
-  default_node_subnet_id            = element(module.network.subnets_ids, 2) // places in sn3-vnet-ldo-euw-dev-01
+  default_node_subnet_id            = element(values(module.network.subnets_ids), 2) // places in sn3-vnet-ldo-euw-dev-01
   default_node_availability_zones   = ["1"]
   default_node_count                = "1"
   default_node_agents_min_count     = null
   default_node_agents_max_count     = null
 
-  user_assigned_identity_id = data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id // Created with Libre DevOps PreRequisite Script
+  identity = "UserAssigned"// Created with Libre DevOps PreRequisite Script
+  identity_ids = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 }
 
 module "win_vm" {
