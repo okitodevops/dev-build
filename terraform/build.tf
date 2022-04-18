@@ -65,7 +65,3 @@ module "win_vm" {
 
   tags = module.rg.rg_tags
 }
-
-output "vm_zones" {
-  value = module.win_vm.vm_zones
-}

@@ -80,6 +80,12 @@ resources:
     name: libre-devops/azure-pipelines-module-development-build
     ref: dev
 
+  - repository: terraform-azdo-pipeline-template
+    type: github
+    endpoint: github_service_connection
+    name: libre-devops/terraform-azdo-pipeline-template
+    ref: main
+
 # You may wish to use a separate or self-hosted agent per job, by default, all jobs will inherit stage agent
 pool:
   name: Azure Pipelines
@@ -101,7 +107,7 @@ stages:
           - checkout: azure-naming-convention
 
           # Remotely fetch pipeline template, in this case, I am using one in my development repo.
-          - template: /templates/terraform-cicd-template.yml@azure-pipelines-module-development-build
+          - template: /.azurepipelines/.templates/terraform-cicd-template.yml@aterraform-azdo-pipeline-template
             parameters:
               SHORTHAND_PROJECT_NAME: ${{ parameters.SHORTHAND_PROJECT_NAME }} # Parameters entered in YAML
               SHORTHAND_ENVIRONMENT_NAME: ${{ parameters.SHORTHAND_ENVIRONMENT_NAME }}
