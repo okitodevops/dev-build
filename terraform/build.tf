@@ -79,7 +79,7 @@ module "win_vm" {
   location = module.rg.rg_location
 
   vm_amount          = local.vm_amount
-  vm_hostname        = "vm${var.short}${var.loc}${terraform.workspace}"
+  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}"
   vm_size            = "Standard_B2ms"
   vm_os_simple       = "WindowsServer2019"
   vm_os_disk_size_gb = "127"
