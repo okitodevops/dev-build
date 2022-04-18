@@ -135,7 +135,7 @@ resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
   protocol                                   = "Tcp"
   source_port_range                          = "*"
   destination_port_ranges                    = ["22", "3389"]
-  source_address_prefixes                    = chomp(data.http.user_ip)
+  source_address_prefixes                    = chomp(data.http.user_ip.body)
   destination_address_prefixes               = module.network.vnet_address_space
   resource_group_name                        = module.rg.rg_name
   network_security_group_name                = module.nsg.nsg_name
