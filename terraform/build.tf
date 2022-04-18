@@ -106,7 +106,7 @@ output "vm_name_unsplit" {
 }
 
 output "vm_regex" {
-  value = element(regexall("[a-z]+", element(module.win_vm.vm_name, 0), 0))
+  value = element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)
 }
 
 
