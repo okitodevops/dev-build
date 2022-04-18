@@ -39,10 +39,8 @@ module "nsg" {
   tags = module.rg.rg_tags
 }
 
-locals {
-  vm_amount = 1
-}
-
+// Fix error which causes security errors to be flagged by TFSec, public egress is needed for Azure Bastion to function, its kind of the point :)
+#tfsec:ignore:azure-network-no-public-egress[destination_address_prefix="*"]
 module "bastion" {
   source = "registry.terraform.io/libre-devops/bastion/azurerm"
 
@@ -68,6 +66,10 @@ module "bastion" {
   bas_host_ipconfig_name = "bas-${var.short}-${var.loc}-${terraform.workspace}-01-ipconfig"
 
   tags = module.rg.rg_tags
+}
+
+locals {
+  vm_amount = 1
 }
 
 module "win_vm" {
