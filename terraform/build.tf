@@ -126,17 +126,17 @@ output "my_ip_chomp" {
   value = chomp(data.http.user_ip.body)
 }
 
-// Allow Inbound Access from Bastion
-resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
-  name                                       = "AllowBasSSHRDPFromHomeInbound"
-  priority                                   = 405
-  direction                                  = "Inbound"
-  access                                     = "Allow"
-  protocol                                   = "Tcp"
-  source_port_range                          = "*"
-  destination_port_ranges                    = ["22", "3389"]
-  source_address_prefixes                    = chomp(data.http.user_ip.body)
-  destination_address_prefixes               = module.network.vnet_address_space
-  resource_group_name                        = module.rg.rg_name
-  network_security_group_name                = module.nsg.nsg_name
-}
+#// Allow Inbound Access from Bastion
+#resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
+#  name                                       = "AllowBasSSHRDPFromHomeInbound"
+#  priority                                   = 405
+#  direction                                  = "Inbound"
+#  access                                     = "Allow"
+#  protocol                                   = "Tcp"
+#  source_port_range                          = "*"
+#  destination_port_ranges                    = ["22", "3389"]
+#  source_address_prefixes                    = chomp(data.http.user_ip.body)
+#  destination_address_prefixes               = module.network.vnet_address_space
+#  resource_group_name                        = module.rg.rg_name
+#  network_security_group_name                = module.nsg.nsg_name
+#}
