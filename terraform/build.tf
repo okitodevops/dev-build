@@ -68,11 +68,6 @@ module "bastion" {
   tags = module.rg.rg_tags
 }
 
-#checkov:skip=CKV_AZURE_4:Monitoring can be enabled but is disabled by default
-#checkov:skip=CKV_AZURE_7:This module does not consider network policy
-#checkov:skip=CKV_AZURE_116:CheckOV has a false positive for this run
-#checkov:skip=CKV_AZURE_117:This module does not consider for disk encryption sets
-#checkov:skip=CKV_AZURE_141`:This module does not consider for admin account disabled by default
 // This module does not consider for log analytics oms agent, but tfsec warns anyway.  Code exists to enable it should you wish by check is tabled
 #tfsec:ignore:azure-container-logging
 module "aks" {
@@ -85,15 +80,15 @@ module "aks" {
   aks_name                = "aks-${var.short}-${var.loc}-${terraform.workspace}-01" // aks-ldo-euw-dev-01
   admin_username          = "LibreDevOpsAdmin"
   ssh_public_key          = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with Libre DevOps PreRequisite Script
-  kubernetes_version      = "1.22"
+  kubernetes_version      = "1.22.6"
   dns_prefix              = "ldo"
   sku_tier                = "Free"
   private_cluster_enabled = true
   enable_rbac             = true
 
   default_node_enable_auto_scaling  = false
-  default_node_orchestrator_version = "1.22"
-  default_node_pool_name            = "lbdo-pool"
+  default_node_orchestrator_version = "1.22.6"
+  default_node_pool_name            = "lbdopool"
   default_node_vm_size              = "Standard_B2ms"
   default_node_os_disk_size_gb      = "127"
   default_node_subnet_id            = element(values(module.network.subnets_ids), 2) // places in sn3-vnet-ldo-euw-dev-01
