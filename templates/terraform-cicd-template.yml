@@ -178,7 +178,7 @@ steps:
         displayName: 'CheckOV Check'
         workingDirectory: "${{ parameters.TERRAFORM_PATH }}"
         continueOnError: false
-        condition: eq(parameters.CHECKOV_SKIP_TESTS, " ")
+        condition: eq(parameters.CHECKOV_SKIP_TESTS, '  ')
         enabled: true
 
       - pwsh: |
@@ -190,7 +190,7 @@ steps:
         displayName: 'CheckOV Check'
         workingDirectory: "${{ parameters.TERRAFORM_PATH }}"
         continueOnError: false
-        condition: ne(parameters.CHECKOV_SKIP_TESTS, " ")
+        condition: ne(parameters.CHECKOV_SKIP_TESTS, '  ')
         enabled: true
 
   - ${{ if and(eq(parameters.TERRAFORM_DESTROY, false), eq(parameters.TERRAFORM_PLAN_ONLY, false)) }}:
@@ -268,7 +268,7 @@ steps:
         displayName: 'CheckOV Check'
         workingDirectory: "${{ parameters.TERRAFORM_PATH }}"
         continueOnError: false
-        condition: eq(parameters.CHECKOV_SKIP_TESTS, " ")
+        condition: eq(parameters.CHECKOV_SKIP_TESTS, '  ')
         enabled: true
 
       - pwsh: |
@@ -280,7 +280,7 @@ steps:
         displayName: 'CheckOV Check'
         workingDirectory: "${{ parameters.TERRAFORM_PATH }}"
         continueOnError: false
-        condition: ne(parameters.CHECKOV_SKIP_TESTS, " ")
+        condition: ne(parameters.CHECKOV_SKIP_TESTS, '  ')
         enabled: true
 
       - pwsh: |
