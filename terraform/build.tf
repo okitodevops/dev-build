@@ -84,6 +84,8 @@ module "win_vm" {
   vm_os_simple       = "WindowsServer2019"
   vm_os_disk_size_gb = "127"
 
+  asg_name = "asg-vm${var.short}${var.loc}${terraform.workspace}"
+
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
 
