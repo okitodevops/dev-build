@@ -107,10 +107,6 @@ module "aks" {
   net_profile_docker_bridge_cidr = "172.17.0.1/16"
 }
 
-output "test" {
-  value = element(values(module.network.subnets_ids), 2)
-}
-
 module "win_vm" {
   source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
@@ -136,15 +132,15 @@ module "win_vm" {
   tags = module.rg.rg_tags
 }
 
-module "run_command" {
+module "run_command_win" {
   source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
 
-  depends_on = [module.rg, module.win_vm]
+  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
   location   = module.rg.rg_location
   rg_name    = module.rg.rg_name
   vm_name    = element(module.win_vm.vm_name, 0)
   os_type    = "windows"
-  tags      = module.rg.rg_tags
+  tags       = module.rg.rg_tags
 
   command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
 }
@@ -173,6 +169,23 @@ module "lnx_vm" {
   identity_type        = "SystemAssigned"
 
   tags = module.rg.rg_tags
+}
+
+module "run_command_win" {
+  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
+
+  for_each = {
+    for vm, name in module.lnx_vm.vm_name : vm => name
+  }
+
+  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
+  location   = module.rg.rg_location
+  rg_name    = module.rg.rg_name
+  vm_name    = element(module.win_vm.vm_name, 0)
+  os_type    = "linux"
+  tags       = module.rg.rg_tags
+
+  command = "echo hello-world /home" // Runs this commands on all Linux VMs
 }
 
 // Allow Inbound Access from Bastion to the entire virtual network
