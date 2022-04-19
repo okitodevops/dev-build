@@ -181,7 +181,7 @@ module "run_command_win" {
   depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
   location   = module.rg.rg_location
   rg_name    = module.rg.rg_name
-  vm_name    = element(module.win_vm.vm_name, 0)
+  vm_name    = each.vm
   os_type    = "linux"
   tags       = module.rg.rg_tags
 
