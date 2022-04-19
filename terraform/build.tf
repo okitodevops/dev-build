@@ -181,7 +181,7 @@ module "run_command_lnx" {
   depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
   location   = module.rg.rg_location
   rg_name    = module.rg.rg_name
-  vm_name    = each.vm
+  vm_name    = each.value
   os_type    = "linux"
   tags       = module.rg.rg_tags
 
