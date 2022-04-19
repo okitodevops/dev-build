@@ -171,14 +171,14 @@ module "lnx_vm" {
   tags = module.rg.rg_tags
 }
 
-module "run_command_win" {
+module "run_command_lnx" {
   source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
 
   for_each = {
     for vm, name in module.lnx_vm.vm_name : vm => name
   }
 
-  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
+  depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
   location   = module.rg.rg_location
   rg_name    = module.rg.rg_name
   vm_name    = each.vm
