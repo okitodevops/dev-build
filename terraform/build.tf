@@ -41,32 +41,32 @@ module "nsg" {
 
 // Fix error which causes security errors to be flagged by TFSec, public egress is needed for Azure Bastion to function, its kind of the point :)
 #tfsec:ignore:azure-network-no-public-egress
-module "bastion" {
-  source = "registry.terraform.io/libre-devops/bastion/azurerm"
-
-
-  vnet_rg_name = module.network.vnet_rg_name
-  vnet_name    = module.network.vnet_name
-
-  bas_subnet_iprange = "10.0.4.0/28"
-
-  bas_nsg_name     = "nsg-bas-${var.short}-${var.loc}-${terraform.workspace}-01" // nsg-bas-ldo-euw-dev-01
-  bas_nsg_location = module.rg.rg_location
-  bas_nsg_rg_name  = module.rg.rg_name
-
-  bas_pip_name              = "pip-bas-${var.short}-${var.loc}-${terraform.workspace}-01" //pip-bas-ldo-euw-dev-01
-  bas_pip_location          = module.rg.rg_location
-  bas_pip_rg_name           = module.rg.rg_name
-  bas_pip_allocation_method = "Static"
-  bas_pip_sku               = "Standard"
-
-  bas_host_name          = "bas-${var.short}-${var.loc}-${terraform.workspace}-01" // bas-ldo-euw-dev-01
-  bas_host_location      = module.rg.rg_location
-  bas_host_rg_name       = module.rg.rg_name
-  bas_host_ipconfig_name = "bas-${var.short}-${var.loc}-${terraform.workspace}-01-ipconfig" // bas-ldo-euw-dev-01-ipconfig
-
-  tags = module.rg.rg_tags
-}
+#module "bastion" {
+#  source = "registry.terraform.io/libre-devops/bastion/azurerm"
+#
+#
+#  vnet_rg_name = module.network.vnet_rg_name
+#  vnet_name    = module.network.vnet_name
+#
+#  bas_subnet_iprange = "10.0.4.0/28"
+#
+#  bas_nsg_name     = "nsg-bas-${var.short}-${var.loc}-${terraform.workspace}-01" // nsg-bas-ldo-euw-dev-01
+#  bas_nsg_location = module.rg.rg_location
+#  bas_nsg_rg_name  = module.rg.rg_name
+#
+#  bas_pip_name              = "pip-bas-${var.short}-${var.loc}-${terraform.workspace}-01" //pip-bas-ldo-euw-dev-01
+#  bas_pip_location          = module.rg.rg_location
+#  bas_pip_rg_name           = module.rg.rg_name
+#  bas_pip_allocation_method = "Static"
+#  bas_pip_sku               = "Standard"
+#
+#  bas_host_name          = "bas-${var.short}-${var.loc}-${terraform.workspace}-01" // bas-ldo-euw-dev-01
+#  bas_host_location      = module.rg.rg_location
+#  bas_host_rg_name       = module.rg.rg_name
+#  bas_host_ipconfig_name = "bas-${var.short}-${var.loc}-${terraform.workspace}-01-ipconfig" // bas-ldo-euw-dev-01-ipconfig
+#
+#  tags = module.rg.rg_tags
+#}
 
 // This module does not consider for log analytics oms agent, but tfsec warns anyway.  Code exists to enable it should you wish by check is tabled
 #tfsec:ignore:azure-container-logging
