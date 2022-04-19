@@ -105,69 +105,69 @@ output "test" {
   value = element(values(module.network.subnets_ids), 2)
 }
 
-module "win_vm" {
-  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+#module "win_vm" {
+#  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#
+#  vm_amount          = 3
+#  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
+#  vm_size            = "Standard_B2ms"
+#  vm_os_simple       = "WindowsServer2019"
+#  vm_os_disk_size_gb = "127"
+#
+#  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+#
+#  admin_username = "LibreDevOpsAdmin"
+#  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
+#
+#  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
+#  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+#  storage_account_type = "Standard_LRS"
+#  identity_type        = "SystemAssigned"
+#
+#  tags = module.rg.rg_tags
+#}
 
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
+#module "run_command" {
+#  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
+#
+#  depends_on = [module.rg, module.win_vm]
+#  location   = module.rg.rg_location
+#  rg_name    = module.rg.rg_name
+#  vm_name    = element(module.win_vm.vm_name, 0)
+#  os_type    = "windows"
+#  tags      = module.rg.rg_tags
+#
+#  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
+#}
 
-  vm_amount          = 3
-  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
-  vm_size            = "Standard_B2ms"
-  vm_os_simple       = "WindowsServer2019"
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
-
-  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
-  storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
-
-  tags = module.rg.rg_tags
-}
-
-module "run_command" {
-  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
-
-  depends_on = [module.rg, module.win_vm]
-  location   = module.rg.rg_location
-  rg_name    = module.rg.rg_name
-  vm_name    = element(module.win_vm.vm_name, 0)
-  os_type    = "windows"
-  tags      = module.rg.rg_tags
-
-  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
-}
-
-module "lnx_vm" {
-  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-
-  vm_amount          = 2
-  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
-  vm_size            = "Standard_B2ms"
-  vm_os_simple       = "Ubuntu20.04"
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with the Libre DevOps Terraform Pre-Requisite Script
-
-  subnet_id            = element(values(module.network.subnets_ids), 0)
-  availability_zone    = "alternate"
-  storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
-
-  tags = module.rg.rg_tags
-}
+#module "lnx_vm" {
+#  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#
+#  vm_amount          = 2
+#  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
+#  vm_size            = "Standard_B2ms"
+#  vm_os_simple       = "Ubuntu20.04"
+#  vm_os_disk_size_gb = "127"
+#
+#  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+#
+#  admin_username = "LibreDevOpsAdmin"
+#  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
+#  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with the Libre DevOps Terraform Pre-Requisite Script
+#
+#  subnet_id            = element(values(module.network.subnets_ids), 0)
+#  availability_zone    = "alternate"
+#  storage_account_type = "Standard_LRS"
+#  identity_type        = "SystemAssigned"
+#
+#  tags = module.rg.rg_tags
+#}
 
 // Allow Inbound Access from Bastion to the entire virtual network
 resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
