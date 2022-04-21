@@ -44,7 +44,6 @@ module "nsg" {
 module "bastion" {
   source = "registry.terraform.io/libre-devops/bastion/azurerm"
 
-
   vnet_rg_name = module.network.vnet_rg_name
   vnet_name    = module.network.vnet_name
 
@@ -68,156 +67,177 @@ module "bastion" {
   tags = module.rg.rg_tags
 }
 
-// This module does not consider for log analytics oms agent, but tfsec warns anyway.  Code exists to enable it should you wish by check is tabled
-#tfsec:ignore:azure-container-logging
-module "aks" {
-  source = "registry.terraform.io/libre-devops/aks/azurerm"
+module "public_lb" {
+  source = "github.com/libre-devops/terraform-azurerm-public-lb"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  aks_name                = "aks-${var.short}-${var.loc}-${terraform.workspace}-01" // aks-ldo-euw-dev-01
-  admin_username          = "LibreDevOpsAdmin"
-  ssh_public_key          = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with Libre DevOps PreRequisite Script
-  kubernetes_version      = "1.22.6"
-  dns_prefix              = "ldo"
-  sku_tier                = "Free"
-  private_cluster_enabled = true
-  enable_rbac             = true
+  pip_name = "pip-lbe-${var.short}-${var.loc}-${terraform.workspace}-01"
+  pip_sku  = "Standard"
 
-  default_node_enable_auto_scaling  = false
-  default_node_orchestrator_version = "1.22.6"
-  default_node_pool_name            = "lbdopool"
-  default_node_vm_size              = "Standard_B2ms"
-  default_node_os_disk_size_gb      = "127"
-  default_node_subnet_id            = element(values(module.network.subnets_ids), 2) // places in sn3-vnet-ldo-euw-dev-01
-  default_node_availability_zones   = ["1"]
-  default_node_count                = "1"
-  default_node_agents_min_count     = null
-  default_node_agents_max_count     = null
 
-  identity_type = "UserAssigned" // Created with Libre DevOps PreRequisite Script
-  identity_ids  = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
+  lb_name                  = "lbe-${var.short}-${var.loc}-${terraform.workspace}-01"
+  lb_bpool_name            = "bpool-${module.public_lb.lb_name}"
+  lb_ip_configuration_name = "lbe-${var.short}-${var.loc}-${terraform.workspace}-01-ipconfig"
 
-  network_plugin                 = "azure"
-  network_policy                 = "azure"
-  net_profile_service_cidr       = "10.0.5.0/24"
-  net_profile_dns_service_ip     = "10.0.5.10"
-  net_profile_docker_bridge_cidr = "172.17.0.1/16"
+  enable_outbound_rule     = true
+  outbound_rule_name       = "rule-out-${module.public_lb.lb_name}"
+  outbound_protocol        = "Tcp"
+  allocated_outbound_ports = 1024
 }
 
-module "win_vm" {
-  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-
-  vm_amount          = 3
-  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
-  vm_size            = "Standard_B2ms"
-  vm_os_simple       = "WindowsServer2019"
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
-
-  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
-  storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
-
-  tags = module.rg.rg_tags
-}
-
-module "run_command_win" {
-  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
-
-  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
-  location   = module.rg.rg_location
-  rg_name    = module.rg.rg_name
-  vm_name    = element(module.win_vm.vm_name, 0)
-  os_type    = "windows"
-  tags       = module.rg.rg_tags
-
-  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
-}
-
-module "lnx_vm" {
-  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-
-  vm_amount          = 2
-  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
-  vm_size            = "Standard_B2ms"
-  vm_os_simple       = "Ubuntu20.04"
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with the Libre DevOps Terraform Pre-Requisite Script
-
-  subnet_id            = element(values(module.network.subnets_ids), 0)
-  availability_zone    = "alternate"
-  storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
-
-  tags = module.rg.rg_tags
-}
-
-module "run_command_lnx" {
-  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
-
-  for_each = {
-    for key, value in module.lnx_vm.vm_name : key => value
-  }
-
-  depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
-  location   = module.rg.rg_location
-  rg_name    = module.rg.rg_name
-  vm_name    = each.value
-  os_type    = "linux"
-  tags       = module.rg.rg_tags
-
-  command = "echo hello > /home/libre-devops.txt" // Runs this commands on all Linux VMs
-}
-
-// Allow Inbound Access from Bastion to the entire virtual network
-resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
-  name                         = "AllowBasSSHRDPInbound"
-  priority                     = 400
-  direction                    = "Inbound"
-  access                       = "Allow"
-  protocol                     = "Tcp"
-  source_port_range            = "*"
-  destination_port_ranges      = ["22", "3389"]
-  source_address_prefixes      = module.bastion.bas_subnet_ip_range
-  destination_address_prefixes = module.network.vnet_address_space
-  resource_group_name          = module.rg.rg_name
-  network_security_group_name  = module.nsg.nsg_name
-}
-
-data "http" "user_ip" {
-  url = "https://ipv4.icanhazip.com" // If running locally, running this block will fetch your outbound public IP of your home/office/ISP/VPN and add it.  It will add the hosted agent etc if running from Microsoft/GitLab
-}
-
-// Allow Inbound Access from your hypothetical home IP - you may not want this.
-resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
-  name                         = "AllowBasSSHRDPFromHomeInbound"
-  priority                     = 405
-  direction                    = "Inbound"
-  access                       = "Allow"
-  protocol                     = "Tcp"
-  source_port_range            = "*"
-  destination_port_ranges      = ["22", "3389"]
-  source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
-  destination_address_prefixes = module.network.vnet_address_space
-  resource_group_name          = module.rg.rg_name
-  network_security_group_name  = module.nsg.nsg_name
-}
+#// This module does not consider for log analytics oms agent, but tfsec warns anyway.  Code exists to enable it should you wish by check is tabled
+##tfsec:ignore:azure-container-logging
+#module "aks" {
+#  source = "registry.terraform.io/libre-devops/aks/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#  tags     = module.rg.rg_tags
+#
+#  aks_name                = "aks-${var.short}-${var.loc}-${terraform.workspace}-01" // aks-ldo-euw-dev-01
+#  admin_username          = "LibreDevOpsAdmin"
+#  ssh_public_key          = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with Libre DevOps PreRequisite Script
+#  kubernetes_version      = "1.22.6"
+#  dns_prefix              = "ldo"
+#  sku_tier                = "Free"
+#  private_cluster_enabled = true
+#  enable_rbac             = true
+#
+#  default_node_enable_auto_scaling  = false
+#  default_node_orchestrator_version = "1.22.6"
+#  default_node_pool_name            = "lbdopool"
+#  default_node_vm_size              = "Standard_B2ms"
+#  default_node_os_disk_size_gb      = "127"
+#  default_node_subnet_id            = element(values(module.network.subnets_ids), 2) // places in sn3-vnet-ldo-euw-dev-01
+#  default_node_availability_zones   = ["1"]
+#  default_node_count                = "1"
+#  default_node_agents_min_count     = null
+#  default_node_agents_max_count     = null
+#
+#  identity_type = "UserAssigned" // Created with Libre DevOps PreRequisite Script
+#  identity_ids  = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
+#
+#  network_plugin                 = "azure"
+#  network_policy                 = "azure"
+#  net_profile_service_cidr       = "10.0.5.0/24"
+#  net_profile_dns_service_ip     = "10.0.5.10"
+#  net_profile_docker_bridge_cidr = "172.17.0.1/16"
+#}
+#
+#module "win_vm" {
+#  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#
+#  vm_amount          = 3
+#  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
+#  vm_size            = "Standard_B2ms"
+#  vm_os_simple       = "WindowsServer2019"
+#  vm_os_disk_size_gb = "127"
+#
+#  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+#
+#  admin_username = "LibreDevOpsAdmin"
+#  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
+#
+#  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
+#  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+#  storage_account_type = "Standard_LRS"
+#  identity_type        = "SystemAssigned"
+#
+#  tags = module.rg.rg_tags
+#}
+#
+#module "run_command_win" {
+#  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
+#
+#  depends_on = [module.win_vm] // fetches as a data reference so requires depends-on
+#  location   = module.rg.rg_location
+#  rg_name    = module.rg.rg_name
+#  vm_name    = element(module.win_vm.vm_name, 0)
+#  os_type    = "windows"
+#  tags       = module.rg.rg_tags
+#
+#  command = "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) ; choco install -y git" // Runs this commands on winldoeuwdev01
+#}
+#
+#module "lnx_vm" {
+#  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#
+#  vm_amount          = 2
+#  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
+#  vm_size            = "Standard_B2ms"
+#  vm_os_simple       = "Ubuntu20.04"
+#  vm_os_disk_size_gb = "127"
+#
+#  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+#
+#  admin_username = "LibreDevOpsAdmin"
+#  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
+#  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with the Libre DevOps Terraform Pre-Requisite Script
+#
+#  subnet_id            = element(values(module.network.subnets_ids), 0)
+#  availability_zone    = "alternate"
+#  storage_account_type = "Standard_LRS"
+#  identity_type        = "SystemAssigned"
+#
+#  tags = module.rg.rg_tags
+#}
+#
+#module "run_command_lnx" {
+#  source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
+#
+#  for_each = {
+#    for key, value in module.lnx_vm.vm_name : key => value
+#  }
+#
+#  depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
+#  location   = module.rg.rg_location
+#  rg_name    = module.rg.rg_name
+#  vm_name    = each.value
+#  os_type    = "linux"
+#  tags       = module.rg.rg_tags
+#
+#  command = "echo hello > /home/libre-devops.txt" // Runs this commands on all Linux VMs
+#}
+#
+#// Allow Inbound Access from Bastion to the entire virtual network
+#resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
+#  name                         = "AllowBasSSHRDPInbound"
+#  priority                     = 400
+#  direction                    = "Inbound"
+#  access                       = "Allow"
+#  protocol                     = "Tcp"
+#  source_port_range            = "*"
+#  destination_port_ranges      = ["22", "3389"]
+#  source_address_prefixes      = module.bastion.bas_subnet_ip_range
+#  destination_address_prefixes = module.network.vnet_address_space
+#  resource_group_name          = module.rg.rg_name
+#  network_security_group_name  = module.nsg.nsg_name
+#}
+#
+#data "http" "user_ip" {
+#  url = "https://ipv4.icanhazip.com" // If running locally, running this block will fetch your outbound public IP of your home/office/ISP/VPN and add it.  It will add the hosted agent etc if running from Microsoft/GitLab
+#}
+#
+#// Allow Inbound Access from your hypothetical home IP - you may not want this.
+#resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
+#  name                         = "AllowBasSSHRDPFromHomeInbound"
+#  priority                     = 405
+#  direction                    = "Inbound"
+#  access                       = "Allow"
+#  protocol                     = "Tcp"
+#  source_port_range            = "*"
+#  destination_port_ranges      = ["22", "3389"]
+#  source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
+#  destination_address_prefixes = module.network.vnet_address_space
+#  resource_group_name          = module.rg.rg_name
+#  network_security_group_name  = module.nsg.nsg_name
+#}
