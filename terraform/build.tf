@@ -26,7 +26,6 @@ module "network" {
     subnet2 = ["Microsoft.Storage", "Microsoft.Sql"], // Adds extra subnet endpoints
     subnet3 = ["Microsoft.AzureActiveDirectory"]
   }
-
 }
 
 module "nsg" {
@@ -38,7 +37,6 @@ module "nsg" {
 
   nsg_name  = "nsg-build-${var.short}-${var.loc}-${terraform.workspace}-01" // nsg-build-ldo-euw-dev-01
   subnet_id = element(values(module.network.subnets_ids), 0)                // Adds NSG to sn1-vnet-ldo-euw-dev-01
-
 }
 
 // Fix error which causes security errors to be flagged by TFSec, public egress is needed for Azure Bastion to function, its kind of the point :)
@@ -189,7 +187,6 @@ module "lnx_vm" {
   availability_zone    = "alternate"
   storage_account_type = "Standard_LRS"
   identity_type        = "SystemAssigned"
-
 }
 
 module "run_command_lnx" {
