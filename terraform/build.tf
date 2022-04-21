@@ -76,7 +76,7 @@ module "public_lb" {
 
   pip_name = "pip-lbe-${var.short}-${var.loc}-${terraform.workspace}-01"
   pip_sku  = "Standard"
-
+  availability_zone = ["1"]
 
   lb_name                  = "lbe-${var.short}-${var.loc}-${terraform.workspace}-01"
   lb_bpool_name            = "bpool-${module.public_lb.lb_name}"
