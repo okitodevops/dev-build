@@ -74,8 +74,8 @@ module "public_lb" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  pip_name = "pip-lbe-${var.short}-${var.loc}-${terraform.workspace}-01"
-  pip_sku  = "Standard"
+  pip_name          = "pip-lbe-${var.short}-${var.loc}-${terraform.workspace}-01"
+  pip_sku           = "Standard"
   availability_zone = ["1"]
 
   lb_name                  = "lbe-${var.short}-${var.loc}-${terraform.workspace}-01"
@@ -195,7 +195,7 @@ module "run_command_lnx" {
   source = "registry.terraform.io/libre-devops/run-vm-command/azurerm"
 
   for_each = {
-    for key, value in module.lnx_vm.vm_name : key => value
+    for key, value in module.lnx_vm.vm_name : key => value // Gets all VM names created by Linux VM module
   }
 
   depends_on = [module.lnx_vm] // fetches as a data reference so requires depends-on
