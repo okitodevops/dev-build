@@ -39,6 +39,9 @@ module "nsg" {
   subnet_id = element(values(module.network.subnets_ids), 0)                // Adds NSG to sn1-vnet-ldo-euw-dev-01
 }
 
+#checkov:skip=CKV2_AZURE_1:CMKs are not considered in this module
+#checkov:skip=CKV2_AZURE_18:CMKs are not considered in this module
+#checkov:skip=CKV_AZURE_33:Storage logging is not configured by default in this module
 #tfsec:ignore:azure-storage-queue-services-logging-enabled tfsec:ignore:azure-storage-allow-microsoft-service-bypass
 module "sa" {
   source = "github.com/libre-devops/terraform-azurerm-storage-account"
