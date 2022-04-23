@@ -50,7 +50,7 @@ module "public_lb" {
   pip_sku           = "Standard"
   availability_zone = ["1"]
 
-  lb_name                  = "lbe-${var.short}-${var.loc}-${terraform.workspace}-01" // lb-ldo-euw-dev-01
+  lb_name                  = "lbe-${var.short}-${var.loc}-${terraform.workspace}-01" // lbe-ldo-euw-dev-01
   lb_bpool_name            = "bpool-${module.public_lb.lb_name}"
   lb_ip_configuration_name = "lbe-${var.short}-${var.loc}-${terraform.workspace}-01-ipconfig"
 
