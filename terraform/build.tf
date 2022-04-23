@@ -46,7 +46,7 @@ module "sa" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  storage_account_name = "sa${var.short}${var.loc}${terraform.workspace}01"
+  storage_account_name = "st${var.short}${var.loc}${terraform.workspace}01"
   access_tier          = "Hot"
 
   network_rules = {
