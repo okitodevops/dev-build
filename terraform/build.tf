@@ -52,7 +52,7 @@ module "sa" {
   network_rules = {
     default_rules = {
       default_action = "Deny"
-      bypass         = ["AzureServices"]
+      bypass         = ["AzureServices", "Metrics", "Logging"]
       ip_rules       = [chomp(data.http.user_ip.body)]
       subnet_ids     = [element(values(module.network.subnets_ids), 0)]
     }
