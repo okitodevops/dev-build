@@ -51,10 +51,12 @@ module "sa" {
   access_tier          = "Hot"
 
   network_rules = {
-    default_action = "Deny",
-    bypass         = ["AzureServices", ]
-    ip_rules       = chomp(data.http.user_ip.body),
-    subnet_ids     = element(values(module.network.subnets_ids), 0),
+    default_rules = {
+      default_action = "Deny",
+      bypass         = "AzureServices",
+      ip_rules       = chomp(data.http.user_ip.body),
+      subnet_ids     = element(values(module.network.subnets_ids), 0),
+    }
   }
 }
 
