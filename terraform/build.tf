@@ -39,6 +39,7 @@ module "nsg" {
   subnet_id = element(values(module.network.subnets_ids), 0)                // Adds NSG to sn1-vnet-ldo-euw-dev-01
 }
 
+#tfsec:ignore:azure-storage-queue-services-logging-enabled
 module "sa" {
   source = "github.com/libre-devops/terraform-azurerm-storage-account"
 
