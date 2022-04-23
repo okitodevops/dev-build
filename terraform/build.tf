@@ -23,6 +23,7 @@ module "network" {
   subnet_names    = ["sn1-${module.network.vnet_name}", "sn2-${module.network.vnet_name}", "sn3-${module.network.vnet_name}"] //sn1-vnet-ldo-euw-dev-01
 
   subnet_service_endpoints = {
+    subnet1 = ["Microsoft.Storage"]
     subnet2 = ["Microsoft.Storage", "Microsoft.Sql"], // Adds extra subnet endpoints
     subnet3 = ["Microsoft.AzureActiveDirectory"]
   }
