@@ -76,12 +76,6 @@ module "private_lb" {
 
   lb_name                  = "lbi-${var.short}-${var.loc}-${terraform.workspace}-01" // lbi-ldo-euw-dev-01
   lb_bpool_name            = "bpool-${module.public_lb.lb_name}"
-  lb_ip_configuration_name = "lbi-${var.short}-${var.loc}-${terraform.workspace}-01-ipconfig"
-
-  enable_outbound_rule     = true // Condtionally creates an outbound rule
-  outbound_rule_name       = "rule-out-${module.public_lb.lb_name}"
-  outbound_protocol        = "Tcp"
-  allocated_outbound_ports = 1024
 }
 
 #// Fix error which causes security errors to be flagged by TFSec, public egress is needed for Azure Bastion to function, its kind of the point :)
