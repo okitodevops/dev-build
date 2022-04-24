@@ -73,17 +73,23 @@ module "sa" {
     }
   }
 
-  queue_properties = {
-    test = {
-      logging = {
-        queue_properties_logging = {
-          delete_enabled        = false
-          read_enabled          = true
-          write-enabled         = true
-          version               = "1.0"
-          retention_policy_days = "10"
-        }
-      }
+  queue_properties_logging = {
+    settings = {
+      delete_enabled        = false
+      read_enabled          = true
+      write-enabled         = true
+      version               = "1.0"
+      retention_policy_days = "10"
+    }
+  }
+
+  queue_cors_rules = {
+    settings = {
+      allowed_headers    = ["*"]
+      allowed_methods    = ["GET", "DELETE"]
+      allowed_origins    = ["*"]
+      exposed_headers    = ["*"]
+      max_age_in_seconds = 5
     }
   }
 
