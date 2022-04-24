@@ -182,10 +182,11 @@ module "sa" {
       }
     }
 
-    customer_managed_key = {
-      key_vault_key_id          = data.azurerm_key_vault.mgmt_kv.id
-      user_assigned_identity_id = data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id
-    }
+    // You must have a managed key for this to work
+    #    customer_managed_key = {
+    #      key_vault_key_id          = data.azurerm_key_vault.mgmt_kv.id
+    #      user_assigned_identity_id = data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id
+    #    }
 
     routing = {
       publish_internet_endpoints  = false
