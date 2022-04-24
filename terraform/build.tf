@@ -333,16 +333,19 @@ data "http" "user_ip" {
 
 
 // Allow Inbound Access from your hypothetical home IP - you may not want this.
-#resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
-#  name                         = "AllowBasSSHRDPFromHomeInbound"
-#  priority                     = 405
-#  direction                    = "Inbound"
-#  access                       = "Allow"
-#  protocol                     = "Tcp"
-#  source_port_range            = "*"
-#  destination_port_ranges      = ["22", "3389"]
-#  source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
-#  destination_address_prefixes = module.network.vnet_address_space
-#  resource_group_name          = module.rg.rg_name
-#  network_security_group_name  = element(values(module.nsg.nsg_name), 0)
-#}
+resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
+  for_each = {
+    for key, value in module.network.subnets_ids : key => value
+  }
+  name                         = "AllowBasSSHRDPFromHomeInbound"
+  priority                     = 405
+  direction                    = "Inbound"
+  access                       = "Allow"
+  protocol                     = "Tcp"
+  source_port_range            = "*"
+  destination_port_ranges      = ["22", "3389"]
+  source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
+  destination_address_prefixes = module.network.vnet_address_space
+  resource_group_name          = module.rg.rg_name
+  network_security_group_name  = each.value
+}
