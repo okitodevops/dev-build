@@ -32,6 +32,7 @@ module "nsg" {
   source = "registry.terraform.io/libre-devops/nsg/azurerm"
 
   depends_on = [module.network] // Set depends on to bypass cycle error on NSG creation for all subnets in list
+
   for_each = {
     for key, value in module.network.subnets_names : key => value // Gets all the subnets and creates a key=value pair, with the name being the value and the id being the key. Adds a default NSG to all subnets
   }
