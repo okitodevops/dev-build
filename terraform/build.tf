@@ -185,7 +185,6 @@ module "sa" {
     customer_managed_key = {
       keyvault_id               = data.azurerm_key_vault.mgmt_kv.id
       user_assigned_identity_id = data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id
-      customer_managed_key      = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
     }
 
     routing = {
