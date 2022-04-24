@@ -73,25 +73,33 @@ module "sa" {
     }
   }
 
-  queue_properties = {
+  #  queue_properties = {
+  #    queue_properties = {
+  #
+  #      #    queue_properties_logging = {
+  #      #      settings = {
+  #      #        delete_enabled        = false
+  #      #        read_enabled          = true
+  #      #        write-enabled         = true
+  #      #        version               = "1.0"
+  #      #        retention_policy_days = "10"
+  #      #      }
+  #      #    }
+  #
+  #      queue_cors_rule = {
+  #        allowed_headers    = ["*"]
+  #        allowed_methods    = ["GET", "DELETE"]
+  #        allowed_origins    = ["*"]
+  #        exposed_headers    = ["*"]
+  #        max_age_in_seconds = 5
+  #      }
+  #    }
+  #  }
+
+  storage_account = {
     queue_properties = {
-
-      #    queue_properties_logging = {
-      #      settings = {
-      #        delete_enabled        = false
-      #        read_enabled          = true
-      #        write-enabled         = true
-      #        version               = "1.0"
-      #        retention_policy_days = "10"
-      #      }
-      #    }
-
-      queue_cors_rule = {
-        allowed_headers    = ["*"]
-        allowed_methods    = ["GET", "DELETE"]
-        allowed_origins    = ["*"]
-        exposed_headers    = ["*"]
-        max_age_in_seconds = 5
+      logging = {
+        delete = true
       }
     }
   }
