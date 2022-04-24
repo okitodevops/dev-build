@@ -5,7 +5,7 @@ module "rg" {
   location = local.location                                            // compares var.loc with the var.regions var to match a long-hand name, in this case, "euw", so "westeurope"
   tags     = local.tags
 
-  #  lock_level = "CanNotDelete" // Do not set to skip lock
+  #  lock_level = "CanNotDelete" // Do not set this value to skip lock
 }
 
 module "network" {
@@ -40,9 +40,10 @@ module "nsg" {
   tags     = module.rg.rg_tags
 
   nsg_name  = "nsg-${each.key}" // nsg-sn*-vnet-ldo-euw-dev-01
-  subnet_id = each.value        // Adds NSG to sn1-vnet-ldo-euw-dev-01
+  subnet_id = each.value        // Adds NSG to all subnets
 }
 
+// This module does not consider for CMKs and allows the users to manually set bypasses
 #checkov:skip=CKV2_AZURE_1:CMKs are not considered in this module
 #checkov:skip=CKV2_AZURE_18:CMKs are not considered in this module
 #checkov:skip=CKV_AZURE_33:Storage logging is not configured by default in this module
@@ -57,14 +58,16 @@ module "sa" {
   storage_account_name = "st${var.short}${var.loc}${terraform.workspace}01"
   access_tier          = "Hot"
 
-  #  network_rules = {
-  #    default_rules = {
-  #      default_action = "Deny"
-  #      bypass         = ["AzureServices", "Metrics", "Logging"]
-  #      ip_rules       = [chomp(data.http.user_ip.body)]
-  #      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
-  #    }
-  #  }
+  network_rules = { // Set this block to enable network rules
+    default_rules = {
+      default_action = "Deny"
+      bypass         = ["AzureServices", "Metrics", "Logging"]
+      ip_rules       = [chomp(data.http.user_ip.body)]
+      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
+    }
+  }
+
+
 }
 
 #module "public_lb" {
