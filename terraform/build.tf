@@ -331,7 +331,6 @@ data "http" "user_ip" {
   url = "https://ipv4.icanhazip.com" // If running locally, running this block will fetch your outbound public IP of your home/office/ISP/VPN and add it.  It will add the hosted agent etc if running from Microsoft/GitLab
 }
 
-
 // Allow Inbound Access from your hypothetical home IP - you may not want this.
 resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
   for_each = {
@@ -347,5 +346,5 @@ resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
   source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
   destination_address_prefixes = module.network.vnet_address_space
   resource_group_name          = module.rg.rg_name
-  network_security_group_name  = each.value
+  network_security_group_name  = each.key
 }
