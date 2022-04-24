@@ -86,13 +86,11 @@ module "sa" {
     #    }
 
     queue_cors_rule = {
-      settings = {
-        allowed_headers    = ["*"]
-        allowed_methods    = ["GET", "DELETE"]
-        allowed_origins    = ["*"]
-        exposed_headers    = ["*"]
-        max_age_in_seconds = 5
-      }
+      allowed_headers    = ["*"]
+      allowed_methods    = ["GET", "DELETE"]
+      allowed_origins    = ["*"]
+      exposed_headers    = ["*"]
+      max_age_in_seconds = 5
     }
   }
 
