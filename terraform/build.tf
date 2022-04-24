@@ -67,6 +67,7 @@ module "sa" {
     }
   }
 
+  // Enabling this without appropriate records causes an error
   #  custom_domain = {
   #    "libredevops.org" = {
   #      use_subdomain = false
@@ -75,6 +76,30 @@ module "sa" {
 
   storage_account_properties = {
 
+    blob_properties = {
+
+      versioning_eabled        = false
+      change_feed_enabled      = false
+      default_service_version  = "2020-06-12"
+      last_access_time_enabled = false
+
+      deletion_retention_polcies = {
+        days = 10
+      }
+
+      cors_rules = {
+        allowed_headers    = ["*"]
+        allowed_methods    = ["GET", "DELETE"]
+        allowed_origins    = ["*"]
+        exposed_headers    = ["*"]
+        max_age_in_seconds = 5
+      }
+
+      container_delete_retention_policy = {
+        days = 10
+      }
+    }
+    // Enabling this without a queue will cause an error
     #    queue_properties = {
     #      logging = {
     #        delete  = true
@@ -209,7 +234,7 @@ module "sa" {
 #  vm_amount          = 3
 #  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
 #  vm_size            = "Standard_B2ms"
-#  vm_os_simple       = "WindowsServer2019"
+#  vm_os_simple       = "CISWindowsServer2019L1"
 #  vm_os_disk_size_gb = "127"
 #
 #  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
@@ -247,7 +272,7 @@ module "sa" {
 #  vm_amount          = 2
 #  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
 #  vm_size            = "Standard_B2ms"
-#  vm_os_simple       = "Ubuntu20.04"
+#  vm_os_simple       = "CISUbuntu20.04L1"
 #  vm_os_disk_size_gb = "127"
 #
 #  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
