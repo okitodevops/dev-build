@@ -51,6 +51,10 @@ module "nsg" {
 module "sa" {
   source = "registry.terraform.io/libre-devops/storage-account/azurerm"
 
+  for_each = {
+    for key, value in module.network.subnets_ids : key => value
+  }
+
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
@@ -66,7 +70,7 @@ module "sa" {
       default_action = "Deny"
       bypass         = ["AzureServices", "Metrics", "Logging"]
       ip_rules       = [chomp(data.http.user_ip.body)]
-      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
+      subnet_ids     = [each.value]
     }
 
     blob_properties = {
@@ -116,7 +120,6 @@ module "sa" {
       index_document     = null
       error_404_document = null
     }
-
 
     routing = {
       publish_internet_endpoints  = false
