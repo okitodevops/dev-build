@@ -75,24 +75,24 @@ module "sa" {
 
   storage_account_properties = {
 
-#    queue_properties = {
-#      logging = {
-#        delete  = true
-#        read    = true
-#        write   = true
-#        version = "1.0"
-#      }
+    #    queue_properties = {
+    #      logging = {
+    #        delete  = true
+    #        read    = true
+    #        write   = true
+    #        version = "1.0"
+    #      }
 
-      cors_rule = {
-        allowed_headers    = ["*"]
-        allowed_methods    = ["GET", "DELETE"]
-        allowed_origins    = ["*"]
-        exposed_headers    = ["*"]
-        max_age_in_seconds = 5
-      }
+    cors_rule = {
+      allowed_headers    = ["*"]
+      allowed_methods    = ["GET", "DELETE"]
+      allowed_origins    = ["*"]
+      exposed_headers    = ["*"]
+      max_age_in_seconds = 5
     }
   }
 }
+#}
 
 #module "public_lb" {
 #  source = "registry.terraform.io/libre-devops/public-lb/azurerm"
