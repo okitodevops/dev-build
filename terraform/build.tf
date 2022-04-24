@@ -73,7 +73,7 @@ module "sa" {
     }
   }
 
-  queue_properties_settings = {
+  queue_properties = {
     queue_properties_logging = {
       delete_enabled        = false
       read_enabled          = true
