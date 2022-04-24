@@ -32,15 +32,15 @@ module "nsg" {
   source = "registry.terraform.io/libre-devops/nsg/azurerm"
 
   for_each = {
-    for key, value in module.network.subnets_ids : key => value // Adds a default NSG to all subnets
+    for key, value in module.network.subnets_names: key => value // Adds a default NSG to all subnets
   }
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  nsg_name  = "nsg-build-${var.short}-${var.loc}-${terraform.workspace}-01" // nsg-build-ldo-euw-dev-01
-  subnet_id = each.value               // Adds NSG to sn1-vnet-ldo-euw-dev-01
+  nsg_name  = "nsg-${each.value}" // nsg-build-ldo-euw-dev-01
+  subnet_id = each.key               // Adds NSG to sn1-vnet-ldo-euw-dev-01
 }
 
 #checkov:skip=CKV2_AZURE_1:CMKs are not considered in this module
