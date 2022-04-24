@@ -83,7 +83,7 @@ module "sa" {
     }
   }
 
-  queue_cors_rules = {
+  queue_cors_rule = {
     settings = {
       allowed_headers    = ["*"]
       allowed_methods    = ["GET", "DELETE"]
