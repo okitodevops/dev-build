@@ -412,5 +412,5 @@ resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
   source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
   destination_address_prefixes = module.network.vnet_address_space
   resource_group_name          = module.rg.rg_name
-  network_security_group_name  = module.nsg.nsg_name
+  network_security_group_name  = element(values(module.nsg.nsg_name), 0)
 }
