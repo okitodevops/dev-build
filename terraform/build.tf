@@ -347,7 +347,7 @@ module "lnx_vm" {
   vm_amount          = 2
   vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
   vm_size            = "Standard_B2ms"
-  vm_os_simple       = "CISUbuntu20.04L1"
+  vm_os_simple       = "CISUbuntu20.04L2"
   vm_os_disk_size_gb = "127"
 
   asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
@@ -401,16 +401,16 @@ data "http" "user_ip" {
 
 
 // Allow Inbound Access from your hypothetical home IP - you may not want this.
-resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
-  name                         = "AllowBasSSHRDPFromHomeInbound"
-  priority                     = 405
-  direction                    = "Inbound"
-  access                       = "Allow"
-  protocol                     = "Tcp"
-  source_port_range            = "*"
-  destination_port_ranges      = ["22", "3389"]
-  source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
-  destination_address_prefixes = module.network.vnet_address_space
-  resource_group_name          = module.rg.rg_name
-  network_security_group_name  = element(values(module.nsg.nsg_name), 0)
-}
+#resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
+#  name                         = "AllowBasSSHRDPFromHomeInbound"
+#  priority                     = 405
+#  direction                    = "Inbound"
+#  access                       = "Allow"
+#  protocol                     = "Tcp"
+#  source_port_range            = "*"
+#  destination_port_ranges      = ["22", "3389"]
+#  source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
+#  destination_address_prefixes = module.network.vnet_address_space
+#  resource_group_name          = module.rg.rg_name
+#  network_security_group_name  = element(values(module.nsg.nsg_name), 0)
+#}
