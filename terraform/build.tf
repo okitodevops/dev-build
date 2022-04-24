@@ -120,10 +120,10 @@ module "sa" {
       }
 
       smb = {
-        versions                       = ["SMB3.1.1"]
-        authentication_types           = ["Kerebos"]
-        kerebos_ticket_encryption_type = ["AES-256"]
-        channel_encryption_type        = ["AES-256-GCM"]
+        versions                        = ["SMB3.1.1"]
+        authentication_types            = ["Kerebos"]
+        kerberos_ticket_encryption_type = ["AES-256"]
+        channel_encryption_type         = ["AES-256-GCM"]
       }
 
       retention_policy = {
