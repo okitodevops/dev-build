@@ -99,7 +99,10 @@ module "sa" {
   storage_account = {
     queue_properties = {
       logging = {
-        delete = true
+        delete  = true
+        read    = true
+        write   = true
+        version = "1.0"
       }
     }
   }
