@@ -75,13 +75,13 @@ module "sa" {
 
   storage_account_properties = {
 
-    queue_properties = {
-      logging = {
-        delete  = true
-        read    = true
-        write   = true
-        version = "1.0"
-      }
+#    queue_properties = {
+#      logging = {
+#        delete  = true
+#        read    = true
+#        write   = true
+#        version = "1.0"
+#      }
 
       cors_rule = {
         allowed_headers    = ["*"]
