@@ -121,7 +121,7 @@ module "sa" {
 
       smb = {
         versions                        = ["SMB3.1.1"]
-        authentication_types            = ["Kerebos"]
+        authentication_types            = ["Kerberos"]
         kerberos_ticket_encryption_type = ["AES-256"]
         channel_encryption_type         = ["AES-256-GCM"]
       }
@@ -183,7 +183,7 @@ module "sa" {
     }
 
     customer_managed_key = {
-      keyvault_id               = data.azurerm_key_vault.mgmt_kv.id
+      key_vault_key_id          = data.azurerm_key_vault.mgmt_kv.id
       user_assigned_identity_id = data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id
     }
 
