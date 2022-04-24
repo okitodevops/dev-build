@@ -32,14 +32,14 @@ module "nsg" {
   source = "registry.terraform.io/libre-devops/nsg/azurerm"
 
   for_each = {
-    for key, value in module.network.subnets_ids : key => value
+    for key, value in module.network.subnets_ids : key => value // Creates a key-value pair of subnet_ids with the keys being the subnet name and value being the id, creates a default NSG and assigns to each
   }
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  nsg_name  = "nsg-${each.key}" // nsg-build-ldo-euw-dev-01
+  nsg_name  = "nsg-${each.key}" // nsg-sn*-vnet-ldo-euw-dev-01
   subnet_id = each.value        // Adds NSG to sn1-vnet-ldo-euw-dev-01
 }
 
@@ -57,14 +57,14 @@ module "sa" {
   storage_account_name = "st${var.short}${var.loc}${terraform.workspace}01"
   access_tier          = "Hot"
 
-  network_rules = {
-    default_rules = {
-      default_action = "Deny"
-      bypass         = ["AzureServices", "Metrics", "Logging"]
-      ip_rules       = [chomp(data.http.user_ip.body)]
-      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
-    }
-  }
+  #  network_rules = {
+  #    default_rules = {
+  #      default_action = "Deny"
+  #      bypass         = ["AzureServices", "Metrics", "Logging"]
+  #      ip_rules       = [chomp(data.http.user_ip.body)]
+  #      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
+  #    }
+  #  }
 }
 
 #module "public_lb" {
