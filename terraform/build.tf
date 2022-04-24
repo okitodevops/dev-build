@@ -68,16 +68,16 @@ module "sa" {
       ip_rules       = [chomp(data.http.user_ip.body)]
       subnet_ids     = [element(values(module.network.subnets_ids), 0)]
 
-      #      private_link_access = {
-      #        endpoint_resource_id = element(values(module.network.subnets_ids), 0)
-      #        endpoint_tenant_id   = data.azurerm_client_config.current_creds.tenant_id
-      #      }
+      private_link_access = {
+        endpoint_resource_id = element(values(module.network.subnets_ids), 0)
+        endpoint_tenant_id   = data.azurerm_client_config.current_creds.tenant_id
+      }
     }
 
-    #    custom_domain = {
-    #      name          = "libredevops.org"
-    #      use_subdomain = false
-    #    }
+    custom_domain = {
+      name          = "libredevops.org"
+      use_subdomain = false
+    }
 
     blob_properties = {
       versioning_enabled       = false
