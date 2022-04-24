@@ -68,7 +68,7 @@ module "sa" {
   }
 
   custom_domain = {
-    libredevops.org = {
+    "libredevops.org" = {
       use_subdomain = false
     }
   }
