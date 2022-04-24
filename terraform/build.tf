@@ -74,12 +74,14 @@ module "sa" {
   }
 
   queue_properties = {
-    queue_properties_logging = {
-      delete_enabled        = false
-      read_enabled          = true
-      write-enabled         = true
-      version               = "1.0"
-      retention_policy_days = "10"
+    logging = {
+      queue_properties_logging = {
+        delete_enabled        = false
+        read_enabled          = true
+        write-enabled         = true
+        version               = "1.0"
+        retention_policy_days = "10"
+      }
     }
   }
 
