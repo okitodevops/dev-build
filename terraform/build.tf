@@ -381,19 +381,19 @@ module "run_command_lnx" {
 }
 
 // Allow Inbound Access from Bastion to the entire virtual network
-resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
-  name                         = "AllowBasSSHRDPInbound"
-  priority                     = 400
-  direction                    = "Inbound"
-  access                       = "Allow"
-  protocol                     = "Tcp"
-  source_port_range            = "*"
-  destination_port_ranges      = ["22", "3389"]
-  source_address_prefixes      = module.bastion.bas_subnet_ip_range
-  destination_address_prefixes = module.network.vnet_address_space
-  resource_group_name          = module.rg.rg_name
-  network_security_group_name  = module.nsg.nsg_name
-}
+#resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromBasSubnet" {
+#  name                         = "AllowBasSSHRDPInbound"
+#  priority                     = 400
+#  direction                    = "Inbound"
+#  access                       = "Allow"
+#  protocol                     = "Tcp"
+#  source_port_range            = "*"
+#  destination_port_ranges      = ["22", "3389"]
+#  source_address_prefixes      = module.bastion.bas_subnet_ip_range
+#  destination_address_prefixes = module.network.vnet_address_space
+#  resource_group_name          = module.rg.rg_name
+#  network_security_group_name  = module.nsg.nsg_name
+#}
 
 data "http" "user_ip" {
   url = "https://ipv4.icanhazip.com" // If running locally, running this block will fetch your outbound public IP of your home/office/ISP/VPN and add it.  It will add the hosted agent etc if running from Microsoft/GitLab
