@@ -5,7 +5,7 @@ module "rg" {
   location = local.location                                            // compares var.loc with the var.regions var to match a long-hand name, in this case, "euw", so "westeurope"
   tags     = local.tags
 
-#  lock_level = "CanNotDelete" // Do not set to skip lock
+  #  lock_level = "CanNotDelete" // Do not set to skip lock
 }
 
 module "network" {
@@ -22,17 +22,18 @@ module "network" {
   subnet_prefixes = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   subnet_names    = ["sn1-${module.network.vnet_name}", "sn2-${module.network.vnet_name}", "sn3-${module.network.vnet_name}"] //sn1-vnet-ldo-euw-dev-01
   subnet_service_endpoints = {
-    "sn1-${module.network.vnet_name}" = ["Microsoft.Storage"] // Adds extra subnet endpoints to sn1-vnet-ldo-euw-dev-01
+    "sn1-${module.network.vnet_name}" = ["Microsoft.Storage"]                   // Adds extra subnet endpoints to sn1-vnet-ldo-euw-dev-01
     "sn2-${module.network.vnet_name}" = ["Microsoft.Storage", "Microsoft.Sql"], // Adds extra subnet endpoints to sn2-vnet-ldo-euw-dev-01
-    "sn3-${module.network.vnet_name}" = ["Microsoft.AzureActiveDirectory"] // Adds extra subnet endpoints to sn3-vnet-ldo-euw-dev-01
+    "sn3-${module.network.vnet_name}" = ["Microsoft.AzureActiveDirectory"]      // Adds extra subnet endpoints to sn3-vnet-ldo-euw-dev-01
   }
 }
 
 module "nsg" {
   source = "registry.terraform.io/libre-devops/nsg/azurerm"
 
+  depends_on = [module.network] // Set depends on to bypass cycle error on NSG creation for all subnets in list
   for_each = {
-    for key, value in module.network.subnets_names: key => value // Gets all the subnets and creates a key=value pair, with the name being the value and the id being the key. Adds a default NSG to all subnets
+    for key, value in module.network.subnets_names : key => value // Gets all the subnets and creates a key=value pair, with the name being the value and the id being the key. Adds a default NSG to all subnets
   }
 
   rg_name  = module.rg.rg_name
