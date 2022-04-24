@@ -347,7 +347,7 @@ module "lnx_vm" {
   vm_amount          = 2
   vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}" // lmxldoeuwdev01 & lmxldoeuwdev02
   vm_size            = "Standard_B2ms"
-  vm_os_simple       = "CISUbuntu20.04L2"
+  vm_os_simple       = "CISUbuntu20.04L1"
   vm_os_disk_size_gb = "127"
 
   asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-lnxldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
