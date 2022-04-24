@@ -262,42 +262,42 @@ module "private_lb" {
 
 // This module does not consider for log analytics oms agent, but tfsec warns anyway.  Code exists to enable it should you wish by check is tabled
 #tfsec:ignore:azure-container-logging
-module "aks" {
-  source = "registry.terraform.io/libre-devops/aks/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  aks_name                = "aks-${var.short}-${var.loc}-${terraform.workspace}-01" // aks-ldo-euw-dev-01
-  admin_username          = "LibreDevOpsAdmin"
-  ssh_public_key          = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with Libre DevOps PreRequisite Script
-  kubernetes_version      = "1.22.6"
-  dns_prefix              = "ldo"
-  sku_tier                = "Free"
-  private_cluster_enabled = true
-  enable_rbac             = true
-
-  default_node_enable_auto_scaling  = false
-  default_node_orchestrator_version = "1.22.6"
-  default_node_pool_name            = "lbdopool"
-  default_node_vm_size              = "Standard_B2ms"
-  default_node_os_disk_size_gb      = "127"
-  default_node_subnet_id            = element(values(module.network.subnets_ids), 2) // places in sn3-vnet-ldo-euw-dev-01
-  default_node_availability_zones   = ["1"]
-  default_node_count                = "1"
-  default_node_agents_min_count     = null
-  default_node_agents_max_count     = null
-
-  identity_type = "UserAssigned" // Created with Libre DevOps PreRequisite Script
-  identity_ids  = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
-
-  network_plugin                 = "azure"
-  network_policy                 = "azure"
-  net_profile_service_cidr       = "10.0.5.0/24"
-  net_profile_dns_service_ip     = "10.0.5.10"
-  net_profile_docker_bridge_cidr = "172.17.0.1/16"
-}
+#module "aks" {
+#  source = "registry.terraform.io/libre-devops/aks/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#  tags     = module.rg.rg_tags
+#
+#  aks_name                = "aks-${var.short}-${var.loc}-${terraform.workspace}-01" // aks-ldo-euw-dev-01
+#  admin_username          = "LibreDevOpsAdmin"
+#  ssh_public_key          = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key // Created with Libre DevOps PreRequisite Script
+#  kubernetes_version      = "1.22.6"
+#  dns_prefix              = "ldo"
+#  sku_tier                = "Free"
+#  private_cluster_enabled = true
+#  enable_rbac             = true
+#
+#  default_node_enable_auto_scaling  = false
+#  default_node_orchestrator_version = "1.22.6"
+#  default_node_pool_name            = "lbdopool"
+#  default_node_vm_size              = "Standard_B2ms"
+#  default_node_os_disk_size_gb      = "127"
+#  default_node_subnet_id            = element(values(module.network.subnets_ids), 2) // places in sn3-vnet-ldo-euw-dev-01
+#  default_node_availability_zones   = ["1"]
+#  default_node_count                = "1"
+#  default_node_agents_min_count     = null
+#  default_node_agents_max_count     = null
+#
+#  identity_type = "UserAssigned" // Created with Libre DevOps PreRequisite Script
+#  identity_ids  = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
+#
+#  network_plugin                 = "azure"
+#  network_policy                 = "azure"
+#  net_profile_service_cidr       = "10.0.5.0/24"
+#  net_profile_dns_service_ip     = "10.0.5.10"
+#  net_profile_docker_bridge_cidr = "172.17.0.1/16"
+#}
 
 module "win_vm" {
   source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
