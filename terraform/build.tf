@@ -36,7 +36,7 @@ module "nsg" {
   tags     = module.rg.rg_tags
 
   nsg_name  = "nsg-${element(values(module.network.subnets_names), 0)}" // nsg-sn*-vnet-ldo-euw-dev-01
-  subnet_id = element(module.network.subnets_ids, 0)            // Adds NSG to all subnets
+  subnet_id = element(values(module.network.subnets_ids), 0)            // Adds NSG to all subnets
 }
 
 // This module does not consider for CMKs and allows the users to manually set bypasses
@@ -357,5 +357,5 @@ resource "azurerm_network_security_rule" "AllowSSHRDPInboundFromHomeSubnet" {
   source_address_prefixes      = [chomp(data.http.user_ip.body)] // Chomp function removes a heredoc response from http user ip response
   destination_address_prefixes = module.network.vnet_address_space
   resource_group_name          = module.rg.rg_name
-  network_security_group_name  = element(values(module.nsg.nsg_name), 0)
+  network_security_group_name  = module.nsg.nsg_name
 }
