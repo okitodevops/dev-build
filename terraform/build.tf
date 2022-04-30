@@ -62,7 +62,7 @@ module "sa" {
       default_action = "Deny"
       bypass         = ["AzureServices", "Metrics", "Logging"]
       ip_rules       = [chomp(data.http.user_ip.body)]
-      subnet_ids     = [each.value]
+      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
     }
 
     blob_properties = {
@@ -104,6 +104,21 @@ module "asp" {
     size  = "Y1"
   }
 }
+
+module "plan" {
+  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
+  add_to_app_service_environment = false
+
+  os_type  = "Linux"
+  sku_name = "Y1"
+}
+
 
 #module "public_lb" {
 #  source = "registry.terraform.io/libre-devops/public-lb/azurerm"
