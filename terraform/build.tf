@@ -35,7 +35,7 @@ module "nsg" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  nsg_name  = "nsg-${element(values(module.network.subnets_names), 0)}" // nsg-sn*-vnet-ldo-euw-dev-01
+  nsg_name  = "nsg-sn1-${module.network.vnet_name}" // nsg-sn1-vnet-ldo-euw-dev-01
   subnet_id = element(values(module.network.subnets_ids), 0)            // Adds NSG to all subnets
 }
 
@@ -132,7 +132,7 @@ module "asp" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_service_plan_name = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_service_plan_name = "plan-${var.short}-${var.loc}-${terraform.workspace}-01"
 
   kind    = "FunctionApp"
   sku     = {
