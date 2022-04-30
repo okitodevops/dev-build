@@ -5,7 +5,7 @@ module "rg" {
   location = local.location                                            // compares var.loc with the var.regions var to match a long-hand name, in this case, "euw", so "westeurope"
   tags     = local.tags
 
-  lock_level = "CanNotDelete" // Do not set this value to skip lock
+#  lock_level = "CanNotDelete" // Do not set this value to skip lock
 }
 
 module "network" {
@@ -36,7 +36,7 @@ module "nsg" {
   tags     = module.rg.rg_tags
 
   nsg_name  = "nsg-${element(values(module.network.subnets_names), 0)}" // nsg-sn*-vnet-ldo-euw-dev-01
-  subnet_id = element(values(module.network.subnets_ids), 0)            // Adds NSG to all subnets
+  subnet_id = element(module.network.subnets_ids, 0)            // Adds NSG to all subnets
 }
 
 // This module does not consider for CMKs and allows the users to manually set bypasses
