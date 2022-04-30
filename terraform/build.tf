@@ -47,10 +47,6 @@ module "nsg" {
 module "sa" {
   source = "registry.terraform.io/libre-devops/storage-account/azurerm"
 
-  for_each = {
-    for key, value in module.network.subnets_ids : key => value
-  }
-
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
