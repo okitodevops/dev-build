@@ -35,7 +35,7 @@ module "nsg" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  nsg_name  = "nsg-sn1-${module.network.vnet_name}" // nsg-sn1-vnet-ldo-euw-dev-01
+  nsg_name  = "nsg-${element(keys(module.network.subnets_ids), 0)}" // nsg-sn1-vnet-ldo-euw-dev-01
   subnet_id = element(values(module.network.subnets_ids), 0)            // Adds NSG to all subnets
 }
 
@@ -82,39 +82,6 @@ module "sa" {
       container_delete_retention_policy = {
         days = 10
       }
-
-      cors_rule = {
-        allowed_headers    = ["*"]
-        allowed_methods    = ["GET", "DELETE"]
-        allowed_origins    = ["*"]
-        exposed_headers    = ["*"]
-        max_age_in_seconds = 5
-      }
-    }
-
-    share_properties = {
-
-      versioning_enabled       = true
-      change_feed_enabled      = true
-      default_service_version  = true
-      last_access_time_enabled = true
-
-      cors_rule = {
-        allowed_headers    = ["*"]
-        allowed_methods    = ["GET", "DELETE"]
-        allowed_origins    = ["*"]
-        exposed_headers    = ["*"]
-        max_age_in_seconds = 5
-      }
-
-      retention_policy = {
-        days = 10
-      }
-    }
-
-    static_website = {
-      index_document     = null
-      error_404_document = null
     }
 
     routing = {
@@ -132,11 +99,12 @@ module "asp" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_service_plan_name = "plan-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_service_plan_name          = "plan-${var.short}-${var.loc}-${terraform.workspace}-01"
+  add_to_app_service_environment = false
 
   kind    = "FunctionApp"
   sku     = {
-    tier  = "Consumption"
+    tier  = "Dynamic"
     size  = "Y1"
   }
 }
