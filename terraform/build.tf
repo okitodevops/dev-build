@@ -98,7 +98,7 @@ module "asp_old" {
   app_service_plan_name          = "plan-${var.short}-${var.loc}-${terraform.workspace}-01"
   add_to_app_service_environment = false
 
-  kind = "FunctionApp"
+  kind = "Linux"
   sku = {
     tier = "Dynamic"
     size = "Y1"
