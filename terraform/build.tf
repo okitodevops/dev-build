@@ -154,9 +154,8 @@ module "fnc_app" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_name            = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
-  app_service_plan_id = module.plan.service_plan_id
-  os_type             = "Linux"
+  app_name        = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  service_plan_id = module.plan.service_plan_id
 
   storage_account_name          = module.sa.sa_name
   storage_account_access_key    = module.sa.sa_primary_access_key
