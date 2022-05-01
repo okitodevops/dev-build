@@ -88,6 +88,20 @@ module "sa" {
   }
 }
 
+module "plan" {
+  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
+  add_to_app_service_environment = false
+
+  os_type  = "Linux"
+  sku_name = "Y1"
+}
+
 module "asp_old" {
   source = "registry.terraform.io/libre-devops/app-service-plan/azurerm"
 
@@ -105,20 +119,6 @@ module "asp_old" {
   }
 }
 
-module "plan" {
-  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
-  add_to_app_service_environment = false
-
-  os_type  = "Linux"
-  sku_name = "Y1"
-}
-
 #checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
 module "fnc_app_old" {
   source = "registry.terraform.io/libre-devops/function-app/azurerm"
@@ -127,7 +127,7 @@ module "fnc_app_old" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_name                   = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_name                   = "func-${var.short}-${var.loc}-${terraform.workspace}-01"
   app_service_plan_id        = module.plan.service_plan_id
   os_type                    = "Linux"
   storage_account_name       = module.sa.sa_name
@@ -138,6 +138,37 @@ module "fnc_app_old" {
     site_config = {
       min_tls_version = "1.2"
       http2_enabled   = true
+    }
+
+    auth_settings = {
+      enabled = true
+    }
+  }
+}
+
+#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
+module "fnc_app" {
+  source = "registry.terraform.io/libre-devops/linux-function-app/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  app_name            = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_service_plan_id = module.plan.service_plan_id
+  os_type             = "Linux"
+
+  storage_account_name          = module.sa.sa_name
+  storage_account_access_key    = module.sa.sa_primary_access_key
+  storage_uses_managed_identity = "false"
+
+  identity_type               = "SystemAssigned"
+  functions_extension_version = "~4"
+
+  settings = {
+    site_config = {
+      minimum_tls_version = "1.2"
+      http2_enabled       = true
     }
 
     auth_settings = {
