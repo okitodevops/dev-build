@@ -88,7 +88,7 @@ module "sa" {
   }
 }
 
-module "asp" {
+module "asp_old" {
   source = "registry.terraform.io/libre-devops/app-service-plan/azurerm"
 
   rg_name  = module.rg.rg_name
@@ -117,6 +117,20 @@ module "plan" {
 
   os_type  = "Linux"
   sku_name = "Y1"
+}
+
+module "fnc_app_old" {
+  source = "registry.terraform.io/libre-devops/function-app/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  app_amount = 1
+  app_name = "fnc-${var.short}-${var.loc}-${terraform.workspace}"
+  app_service_plan_id = module.plan.service_plan_id
+  os_type = "Linux"
+  storage_account_name = module.sa.sa_name
 }
 
 
