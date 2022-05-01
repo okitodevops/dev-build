@@ -130,6 +130,13 @@ module "fnc_app_old" {
   app_service_plan_id  = module.plan.service_plan_id
   os_type              = "Linux"
   storage_account_name = module.sa.sa_name
+  identity_type        = "SystemAssigned"
+
+  settings = {
+    site_config = {
+      min_tls_version = "1.2"
+    }
+  }
 }
 
 
