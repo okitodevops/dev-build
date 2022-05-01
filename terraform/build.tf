@@ -5,7 +5,7 @@ module "rg" {
   location = local.location                                            // compares var.loc with the var.regions var to match a long-hand name, in this case, "euw", so "westeurope"
   tags     = local.tags
 
-#  lock_level = "CanNotDelete" // Do not set this value to skip lock
+  #  lock_level = "CanNotDelete" // Do not set this value to skip lock
 }
 
 module "network" {
@@ -36,7 +36,7 @@ module "nsg" {
   tags     = module.rg.rg_tags
 
   nsg_name  = "nsg-${element(keys(module.network.subnets_ids), 0)}" // nsg-sn1-vnet-ldo-euw-dev-01
-  subnet_id = element(values(module.network.subnets_ids), 0)            // Adds NSG to all subnets
+  subnet_id = element(values(module.network.subnets_ids), 0)        // Adds NSG to all subnets
 }
 
 // This module does not consider for CMKs and allows the users to manually set bypasses
@@ -98,10 +98,10 @@ module "asp_old" {
   app_service_plan_name          = "plan-${var.short}-${var.loc}-${terraform.workspace}-01"
   add_to_app_service_environment = false
 
-  kind    = "FunctionApp"
-  sku     = {
-    tier  = "Dynamic"
-    size  = "Y1"
+  kind = "FunctionApp"
+  sku = {
+    tier = "Dynamic"
+    size = "Y1"
   }
 }
 
@@ -126,10 +126,9 @@ module "fnc_app_old" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_amount = 1
-  app_name = "fnc-${var.short}-${var.loc}-${terraform.workspace}"
-  app_service_plan_id = module.plan.service_plan_id
-  os_type = "Linux"
+  app_name             = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_service_plan_id  = module.plan.service_plan_id
+  os_type              = "Linux"
   storage_account_name = module.sa.sa_name
 }
 
