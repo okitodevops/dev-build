@@ -126,11 +126,12 @@ module "fnc_app_old" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_name             = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
-  app_service_plan_id  = module.plan.service_plan_id
-  os_type              = "Linux"
-  storage_account_name = module.sa.sa_name
-  identity_type        = "SystemAssigned"
+  app_name                   = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  app_service_plan_id        = module.plan.service_plan_id
+  os_type                    = "Linux"
+  storage_account_name       = module.sa.sa_name
+  storage_account_access_key = module.sa.sa_primary_access_key
+  identity_type              = "SystemAssigned"
 
   settings = {
     site_config = {
