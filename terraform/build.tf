@@ -119,6 +119,7 @@ module "plan" {
   sku_name = "Y1"
 }
 
+#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
 module "fnc_app_old" {
   source = "registry.terraform.io/libre-devops/function-app/azurerm"
 
@@ -136,10 +137,14 @@ module "fnc_app_old" {
   settings = {
     site_config = {
       min_tls_version = "1.2"
+      http2_enabled   = true
+    }
+
+    auth_settings = {
+      enabled = true
     }
   }
 }
-
 
 #module "public_lb" {
 #  source = "registry.terraform.io/libre-devops/public-lb/azurerm"
