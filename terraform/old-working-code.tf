@@ -7,7 +7,7 @@
 #
 #  #  lock_level = "CanNotDelete" // Do not set this value to skip lock
 #}
-
+#
 #module "network" {
 #  source = "registry.terraform.io/libre-devops/network/azurerm"
 #
@@ -27,7 +27,7 @@
 #    "sn3-${module.network.vnet_name}" = ["Microsoft.AzureActiveDirectory"]      // Adds extra subnet endpoints to sn3-vnet-ldo-euw-dev-01
 #  }
 #}
-
+#
 #module "nsg" {
 #  source = "registry.terraform.io/libre-devops/nsg/azurerm"
 #
@@ -38,12 +38,16 @@
 #  nsg_name  = "nsg-${element(keys(module.network.subnets_ids), 0)}" // nsg-sn1-vnet-ldo-euw-dev-01
 #  subnet_id = element(values(module.network.subnets_ids), 0)        // Adds NSG to all subnets
 #}
-
-// This module does not consider for CMKs and allows the users to manually set bypasses
-#checkov:skip=CKV2_AZURE_1:CMKs are not considered in this module
-#checkov:skip=CKV2_AZURE_18:CMKs are not considered in this module
-#checkov:skip=CKV_AZURE_33:Storage logging is not configured by default in this module
-#tfsec:ignore:azure-storage-queue-services-logging-enabled tfsec:ignore:azure-storage-allow-microsoft-service-bypass
+#
+#data "http" "user_ip" {
+#  url = "https://ipv4.icanhazip.com" // If running locally, running this block will fetch your outbound public IP of your home/office/ISP/VPN and add it.  It will add the hosted agent etc if running from Microsoft/GitLab
+#}
+#
+#// This module does not consider for CMKs and allows the users to manually set bypasses
+##checkov:skip=CKV2_AZURE_1:CMKs are not considered in this module
+##checkov:skip=CKV2_AZURE_18:CMKs are not considered in this module
+##checkov:skip=CKV_AZURE_33:Storage logging is not configured by default in this module
+##tfsec:ignore:azure-storage-queue-services-logging-enabled tfsec:ignore:azure-storage-allow-microsoft-service-bypass
 #module "sa" {
 #  source = "registry.terraform.io/libre-devops/storage-account/azurerm"
 #
@@ -87,7 +91,7 @@
 #    }
 #  }
 #}
-
+#
 #module "plan" {
 #  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
 #
@@ -101,51 +105,7 @@
 #  os_type  = "Linux"
 #  sku_name = "Y1"
 #}
-
-#module "asp_old" {
-#  source = "registry.terraform.io/libre-devops/app-service-plan/azurerm"
 #
-#  rg_name  = module.rg.rg_name
-#  location = module.rg.rg_location
-#  tags     = module.rg.rg_tags
-#
-#  app_service_plan_name          = "plan-${var.short}-${var.loc}-${terraform.workspace}-01"
-#  add_to_app_service_environment = false
-#
-#  kind = "Linux"
-#  sku = {
-#    tier = "Dynamic"
-#    size = "Y1"
-#  }
-#}
-
-##checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
-#module "fnc_app_old" {
-#  source = "registry.terraform.io/libre-devops/function-app/azurerm"
-#
-#  rg_name  = module.rg.rg_name
-#  location = module.rg.rg_location
-#  tags     = module.rg.rg_tags
-#
-#  app_name                   = "func-${var.short}-${var.loc}-${terraform.workspace}-01"
-#  app_service_plan_id        = module.plan.service_plan_id
-#  os_type                    = "Linux"
-#  storage_account_name       = module.sa.sa_name
-#  storage_account_access_key = module.sa.sa_primary_access_key
-#  identity_type              = "SystemAssigned"
-#
-#  settings = {
-#    site_config = {
-#      min_tls_version = "1.2"
-#      http2_enabled   = true
-#    }
-#
-#    auth_settings = {
-#      enabled = true
-#    }
-#  }
-#}
-
 ##checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
 #module "fnc_app" {
 #  source = "registry.terraform.io/libre-devops/linux-function-app/azurerm"
@@ -168,12 +128,27 @@
 #    site_config = {
 #      minimum_tls_version = "1.2"
 #      http2_enabled       = true
+#
+#      application_stack = {
+#        powershell_core_version = 7
+#      }
 #    }
 #
 #    auth_settings = {
 #      enabled = true
 #    }
 #  }
+#}
+#
+#module "aa" {
+#  source = "registry.terraform.io/libre-devops/automation-account/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#  tags     = module.rg.rg_tags
+#
+#  automation_account_name       = "aa-${var.short}-${var.loc}-${terraform.workspace}-01"
+#  public_network_access_enabled = true
 #}
 
 #module "public_lb" {

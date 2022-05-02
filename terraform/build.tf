@@ -92,61 +92,26 @@ module "sa" {
   }
 }
 
-module "plan" {
-  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
+module "win_vm" {
+  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
-  add_to_app_service_environment = false
+  vm_amount          = 3
+  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
+  vm_size            = "Standard_B2ms"
+  vm_os_simple       = "WindowsServer2019"
+  vm_os_disk_size_gb = "127"
 
-  os_type  = "Linux"
-  sku_name = "Y1"
-}
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
-#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
-module "fnc_app" {
-  source = "registry.terraform.io/libre-devops/linux-function-app/azurerm"
+  admin_username = "LibreDevOpsAdmin"
+  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
 
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  app_name        = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
-  service_plan_id = module.plan.service_plan_id
-
-  storage_account_name          = module.sa.sa_name
-  storage_account_access_key    = module.sa.sa_primary_access_key
-  storage_uses_managed_identity = "false"
-
-  identity_type               = "SystemAssigned"
-  functions_extension_version = "~4"
-
-  settings = {
-    site_config = {
-      minimum_tls_version = "1.2"
-      http2_enabled       = true
-
-      application_stack = {
-        powershell_core_version = 7
-      }
-    }
-
-    auth_settings = {
-      enabled = true
-    }
-  }
-}
-
-module "aa" {
-  source = "registry.terraform.io/libre-devops/automation-account/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  automation_account_name       = "aa-${var.short}-${var.loc}-${terraform.workspace}-01"
-  public_network_access_enabled = true
+  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
+  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+  storage_account_type = "Standard_LRS"
+  identity_type        = "SystemAssigned"
 }
