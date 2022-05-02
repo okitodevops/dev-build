@@ -193,6 +193,7 @@ module "win_vm_with_custom_plan" {
   vm_hostname = "app${var.short}${var.loc}${terraform.workspace}" // appldoeuwdev01
   vm_size     = "Standard_B2ms"
 
+  use_simple_image           = false
   use_simple_image_with_plan = false
 
   source_image_reference = {
