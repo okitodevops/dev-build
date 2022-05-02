@@ -211,7 +211,7 @@ module "win_vm_with_custom_plan" {
 
   vm_os_disk_size_gb = "127"
 
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_with_plan.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_with_custom_plan.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
