@@ -118,7 +118,7 @@ module "win_vm_simple" {
   identity_type        = "SystemAssigned"
 }
 
-// Want to use this module with the SKU calculator? Try something like this
+// Want to use this module without the SKU calculator? Try something like this:
 #module "win_vm_with_custom_image" {
 #  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 #
@@ -200,11 +200,12 @@ module "win_vm_with_custom_plan" {
     offer     = "cis-windows-server-2016-v1-0-0-l2"
     sku       = "cis-ws2016-l2"
     version   = "latest"
-    plan = {
-      name      = "cis-ws2016-l2"
-      product   = "cis-windows-server-2016-v1-0-0-l2"
-      publisher = "center-for-internet-security-inc"
-    }
+  }
+
+  plan = {
+    name      = "cis-ws2016-l2"
+    product   = "cis-windows-server-2016-v1-0-0-l2"
+    publisher = "center-for-internet-security-inc"
   }
 
   vm_os_disk_size_gb = "127"
