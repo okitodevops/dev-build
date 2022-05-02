@@ -128,10 +128,15 @@ module "fnc_app" {
     site_config = {
       minimum_tls_version = "1.2"
       http2_enabled       = true
+
+      application_stack = {
+        powershell_core_version = 7
+      }
     }
 
     auth_settings = {
       enabled = true
     }
+
   }
 }
