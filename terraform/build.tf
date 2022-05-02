@@ -104,7 +104,7 @@ module "lnx_vm_simple" {
   vm_os_simple       = "Ubuntu20.04"
   vm_os_disk_size_gb = "127"
 
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm_simple.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
