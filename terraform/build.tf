@@ -137,6 +137,16 @@ module "fnc_app" {
     auth_settings = {
       enabled = true
     }
-
   }
+}
+
+module "aa" {
+  source = "registry.terraform.io/libre-devops/automation-account/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  automation_account_name       = "aa-${var.short}-${var.loc}-${terraform.workspace}-01"
+  public_network_access_enabled = true
 }
