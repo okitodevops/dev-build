@@ -226,14 +226,14 @@ module "lnx_vm_with_custom_plan" {
 
   source_image_reference = {
     publisher = "center-for-internet-security-inc"
-    offer     = "cis-centos-7-v2-1-1-l12"
+    offer     = "cis-centos-7-v2-1-1-l1"
     sku       = "cis-centos7-l1"
     version   = "latest"
   }
 
   plan = {
     name      = "cis-centos7-l1"
-    product   = "cis-centos-7-v2-1-1-l12"
+    product   = "cis-centos-7-v2-1-1-l1"
     publisher = "center-for-internet-security-inc"
   }
 
