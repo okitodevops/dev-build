@@ -129,7 +129,7 @@ module "win_vm_with_custom_image" {
   vm_hostname = "vm${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
   vm_size     = "Standard_B2ms"
 
-  use_custom_image = true
+  use_simple_image = false
   custom_image_settings = {
     source_image_reference = {
       publisher = "MicrosoftWindowsServer"
