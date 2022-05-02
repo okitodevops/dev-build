@@ -126,17 +126,15 @@ module "win_vm_with_custom_image" {
   tags     = module.rg.rg_tags
 
   vm_amount   = 1
-  vm_hostname = "vm${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
+  vm_hostname = "vm${var.short}${var.loc}${terraform.workspace}" // vmldoeuwdev01
   vm_size     = "Standard_B2ms"
 
   use_simple_image = false
-  custom_image_settings = {
-    source_image_reference = {
-      publisher = "MicrosoftWindowsServer"
-      offer     = "WindowsServer"
-      sku       = "2019-Datacenter"
-      version   = "latest"
-    }
+  source_image_reference = {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2019-Datacenter"
+    version   = "latest"
   }
 
   vm_os_disk_size_gb = "127"
@@ -149,5 +147,6 @@ module "win_vm_with_custom_image" {
   subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
   availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
   storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
+  identity_type        = "UserAssigned"
+  identity_ids         = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 }
