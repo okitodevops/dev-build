@@ -146,7 +146,7 @@ module "lnx_vm_simple" {
 
 // Want to use this module without the SKU calculator? Try something like this:
 module "lnx_vm_with_custom_image" {
-  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
@@ -181,7 +181,7 @@ module "lnx_vm_with_custom_image" {
 
 // Sometimes you may want an image like the CIS images, these are part of a plan rather than the platform images.  You can use the ""registry.terraform.io/libre-devops/windows-os-plan-with-plan-calculator/azurerm""
 module "lnx_vm_with_plan" {
-  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
@@ -211,7 +211,7 @@ module "lnx_vm_with_plan" {
 
 // Don't want to use either? No problem.  Try this:
 module "lnx_vm_with_custom_plan" {
-  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
