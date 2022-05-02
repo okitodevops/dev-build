@@ -132,13 +132,14 @@ module "win_vm_with_custom_image" {
   use_custom_image = true
   custom_image_settings = {
     source_image_reference = {
-      publisher = "WindowsServer"
+      publisher = "MicrosoftWindowsServer"
       offer     = "WindowsServer"
-      sku       = "WindowsServer2019"
+      sku       = "WindowsServer2019-Datacenter"
       version   = "latest"
 
     }
   }
+
   vm_os_disk_size_gb = "127"
 
   asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_with_custom_image.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
