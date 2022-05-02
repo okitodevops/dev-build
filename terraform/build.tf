@@ -92,7 +92,7 @@ module "sa" {
   }
 }
 
-
+// Default behaviour uses "registry.terraform.io/libre-devops/windows-os-plan-calculator/azurerm"
 module "win_vm_simple" {
   source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
@@ -118,6 +118,7 @@ module "win_vm_simple" {
   identity_type        = "SystemAssigned"
 }
 
+// Want to use this module with the SKU calculator? Try something like this
 #module "win_vm_with_custom_image" {
 #  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 #
@@ -151,6 +152,7 @@ module "win_vm_simple" {
 #  identity_ids         = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 #}
 
+// Sometimes you may want an image like the CIS images, these are part of a plan rather than the platform images.  You can use the ""registry.terraform.io/libre-devops/windows-os-plan-with-plan-calculator/azurerm""
 module "win_vm_with_plan" {
   source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
@@ -164,6 +166,46 @@ module "win_vm_with_plan" {
 
   use_simple_image_with_plan = true
   vm_os_simple               = "CISWindowsServer2019L1"
+
+  vm_os_disk_size_gb = "127"
+
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_with_plan.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+
+  admin_username = "LibreDevOpsAdmin"
+  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
+
+  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
+  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+  storage_account_type = "Standard_LRS"
+  identity_type        = "UserAssigned"
+  identity_ids         = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
+}
+
+// Don't want to use either? No problem.  Try this:
+module "win_vm_with_custom_plan" {
+  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  vm_amount   = 1
+  vm_hostname = "app${var.short}${var.loc}${terraform.workspace}" // appldoeuwdev01
+  vm_size     = "Standard_B2ms"
+
+  use_simple_image_with_plan = false
+
+  source_image_reference = {
+    publisher = "center-for-internet-security-inc"
+    offer     = "cis-windows-server-2016-v1-0-0-l2"
+    sku       = "cis-ws2016-l2"
+    version   = "latest"
+    plan = {
+      name      = "cis-ws2016-l2"
+      product   = "cis-windows-server-2016-v1-0-0-l2"
+      publisher = "center-for-internet-security-inc"
+    }
+  }
 
   vm_os_disk_size_gb = "127"
 
