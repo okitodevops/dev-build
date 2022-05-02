@@ -118,7 +118,40 @@ module "win_vm_simple" {
   identity_type        = "SystemAssigned"
 }
 
-module "win_vm_with_custom_image" {
+#module "win_vm_with_custom_image" {
+#  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+#
+#  rg_name  = module.rg.rg_name
+#  location = module.rg.rg_location
+#  tags     = module.rg.rg_tags
+#
+#  vm_amount   = 1
+#  vm_hostname = "vm${var.short}${var.loc}${terraform.workspace}" // vmldoeuwdev01
+#  vm_size     = "Standard_B2ms"
+#
+#  use_simple_image = false
+#  source_image_reference = {
+#    publisher = "MicrosoftWindowsServer"
+#    offer     = "WindowsServer"
+#    sku       = "2019-Datacenter"
+#    version   = "latest"
+#  }
+#
+#  vm_os_disk_size_gb = "127"
+#
+#  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_with_custom_image.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+#
+#  admin_username = "LibreDevOpsAdmin"
+#  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
+#
+#  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
+#  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
+#  storage_account_type = "Standard_LRS"
+#  identity_type        = "UserAssigned"
+#  identity_ids         = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
+#}
+
+module "win_vm_with_plan" {
   source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
 
   rg_name  = module.rg.rg_name
@@ -129,17 +162,12 @@ module "win_vm_with_custom_image" {
   vm_hostname = "vm${var.short}${var.loc}${terraform.workspace}" // vmldoeuwdev01
   vm_size     = "Standard_B2ms"
 
-  use_simple_image = false
-  source_image_reference = {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"
-    sku       = "2019-Datacenter"
-    version   = "latest"
-  }
+  use_simple_image_with_plan = true
+  vm_os_simple               = "CISWindowsServer2019L1"
 
   vm_os_disk_size_gb = "127"
 
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_with_custom_image.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_with_plan.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
 
   admin_username = "LibreDevOpsAdmin"
   admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
