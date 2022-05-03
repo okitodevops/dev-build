@@ -98,7 +98,7 @@ resource "azurerm_storage_container" "event_grid_blob" {
 }
 
 module "event_grid_system_topic" {
-  source = "registry.terraform.io/libre-devops/event-grid-system-topic/azurerm"
+  source = "registry.terraform.io/libre-devops/eventgrid-system-topic/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
@@ -112,7 +112,7 @@ module "event_grid_system_topic" {
 }
 
 module "event_grid_system_topic_subscription" {
-  source = "../../terraform-azurerm-eventgrid-system-topic-event-subscription"
+  source = "registry.terraform.io/libre-devops/eventgrid-system-topic-event-subscription/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
