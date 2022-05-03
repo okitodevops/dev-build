@@ -119,7 +119,7 @@ module "event_hub_namespace" {
       trusted_service_access_enabled = true
 
       virtual_network_rule = {
-        subnet_id                                       = element(module.network.subnets_ids, 0) // uses sn1
+        subnet_id                                       = element(values(module.network.subnets_ids), 0) // uses sn1
         ignore_missing_virtual_network_service_endpoint = false
       }
 
