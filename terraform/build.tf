@@ -108,13 +108,12 @@ module "event_hub_namespace" {
   event_hub_namespace_name = "evhns-${var.short}-${var.loc}-${terraform.workspace}-01"
   identity_type            = "SystemAssigned"
   settings = {
-    sku                      = "Standard"
-    capacity                 = 1
-    auto_inflate_enabled     = false
-    maximum_throughput_units = 1
-    zone_redundant           = false
+    sku                  = "Standard"
+    capacity             = 1
+    auto_inflate_enabled = false
+    zone_redundant       = false
 
-    network_rulessets = {
+    network_rulesets = {
       default_action                 = "Deny"
       trusted_service_access_enabled = true
 
