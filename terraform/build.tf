@@ -63,10 +63,10 @@ module "sa" {
 
     // Set this block to enable network rules
     network_rules = {
-      default_action = "Allow"
-      bypass         = ["AzureServices", "Metrics", "Logging"]
-      ip_rules       = [chomp(data.http.user_ip.body)]
-      subnet_ids     = [element(values(module.network.subnets_ids), 0)]
+      #      default_action = "Allow"
+      bypass     = ["AzureServices", "Metrics", "Logging"]
+      ip_rules   = [chomp(data.http.user_ip.body), module.fnc_app.possible_outbound_ip_addresses]
+      subnet_ids = [element(values(module.network.subnets_ids), 0)]
     }
 
     blob_properties = {
@@ -124,7 +124,7 @@ module "event_hub_namespace" {
       }
 
       ip_rule = {
-        ip_mask = data.http.user_ip.body
+        ip_mask = "${data.http.user_ip.body}/32"
         action  = "Allow"
       }
     }
