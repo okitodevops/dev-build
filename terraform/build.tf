@@ -92,59 +92,10 @@ module "sa" {
   }
 }
 
-module "plan" {
-  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
-  add_to_app_service_environment = false
-
-  os_type  = "Windows"
-  sku_name = "Y1"
-}
-
 resource "azurerm_storage_container" "event_hub_blob" {
   name                 = "blob${var.short}${var.loc}${terraform.workspace}01"
   storage_account_name = module.sa.sa_name
-  type                 = "Block"
-  access_tier          = "Hot"
-}
-
-#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
-module "fnc_app" {
-  source = "registry.terraform.io/libre-devops/windows-function-app/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  app_name        = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
-  service_plan_id = module.plan.service_plan_id
-
-  storage_account_name          = module.sa.sa_name
-  storage_account_access_key    = module.sa.sa_primary_access_key
-  storage_uses_managed_identity = "false"
-
-  identity_type               = "SystemAssigned"
-  functions_extension_version = "~4"
-
-  settings = {
-    site_config = {
-      minimum_tls_version = "1.2"
-      http2_enabled       = true
-
-      application_stack = {
-        java_version = 11
-      }
-    }
-
-    auth_settings = {
-      enabled = true
-    }
-  }
+  container_access_type = "private"
 }
 
 module "event_hub_namespace" {
@@ -207,9 +158,57 @@ module "event_hub" {
 
       destination = {
         name                = "EventHubArchive.AzureBlockBlob"
-        archive_name_format = "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+        archive_name_format = "${module.event_hub_namespace.name}/${module.event_hub.}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
         blob_container_name = azurerm_storage_container.event_hub_blob.name
       }
+    }
+  }
+}
+
+module "plan" {
+  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
+  add_to_app_service_environment = false
+
+  os_type  = "Windows"
+  sku_name = "Y1"
+}
+
+#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
+module "fnc_app" {
+  source = "registry.terraform.io/libre-devops/windows-function-app/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  app_name        = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  service_plan_id = module.plan.service_plan_id
+
+  storage_account_name          = module.sa.sa_name
+  storage_account_access_key    = module.sa.sa_primary_access_key
+  storage_uses_managed_identity = "false"
+
+  identity_type               = "SystemAssigned"
+  functions_extension_version = "~4"
+
+  settings = {
+    site_config = {
+      minimum_tls_version = "1.2"
+      http2_enabled       = true
+
+      application_stack = {
+        java_version = 11
+      }
+    }
+
+    auth_settings = {
+      enabled = true
     }
   }
 }
