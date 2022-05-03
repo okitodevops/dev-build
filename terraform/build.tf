@@ -95,7 +95,7 @@ module "sa" {
 resource "azurerm_storage_container" "event_hub_blob" {
   name                  = "blob${var.short}${var.loc}${terraform.workspace}01"
   storage_account_name  = module.sa.sa_name
-  container_access_type = "public"
+  container_access_type = "container"
 }
 
 module "event_hub_namespace" {
