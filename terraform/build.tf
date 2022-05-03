@@ -153,7 +153,7 @@ module "event_hub" {
 
       destination = {
         name                = "EventHubArchive.AzureBlockBlob"
-        archive_name_format = "${module.event_hub_namespace.name}/evh-${var.short}-${var.loc}-${terraform.workspace}-01/${formatdate("YYYY", timestamp())}}"
+        archive_name_format = "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
         blob_container_name = azurerm_storage_container.event_hub_blob.name
       }
     }
