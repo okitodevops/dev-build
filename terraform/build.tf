@@ -63,7 +63,7 @@ module "sa" {
 
     // Set this block to enable network rules
     network_rules = {
-      default_action = "Deny"
+      default_action = "Allow"
       bypass         = ["AzureServices", "Metrics", "Logging"]
       ip_rules       = [chomp(data.http.user_ip.body)]
       subnet_ids     = [element(values(module.network.subnets_ids), 0)]
@@ -95,7 +95,7 @@ module "sa" {
 resource "azurerm_storage_container" "event_hub_blob" {
   name                  = "blob${var.short}${var.loc}${terraform.workspace}01"
   storage_account_name  = module.sa.sa_name
-  container_access_type = "private"
+  container_access_type = "public"
 }
 
 module "event_hub_namespace" {
