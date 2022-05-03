@@ -106,6 +106,7 @@ module "event_grid_system_topic" {
 
   identity_type = "SystemAssigned"
 
+  event_grid_name        = "evgst-${var.short}-${var.loc}-${terraform.workspace}-01"
   topic_type             = "Microsoft.Storage.StorageAccount"
   source_arm_resource_id = module.sa.sa_id
 }
