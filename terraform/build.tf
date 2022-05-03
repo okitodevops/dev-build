@@ -109,18 +109,18 @@ module "event_hub_namespace" {
   identity_type            = "SystemAssigned"
   settings = {
     sku                      = "Standard"
-    capacity                 = 1
-    auto_inflate_enabled     = false
-    maximum_throughput_units = 1
-    zone_redundant           = false
+    capacity                 = "1"
+    auto_inflate_enabled     = "false"
+    maximum_throughput_units = "1"
+    zone_redundant           = "false"
 
     network_rulessets = {
       default_action                 = "Deny"
-      trusted_service_access_enabled = true
+      trusted_service_access_enabled = "true"
 
       virtual_network_rule = {
         subnet_id                                       = element(module.network.subnets_ids, 0) // uses sn1
-        ignore_missing_virtual_network_service_endpoint = false
+        ignore_missing_virtual_network_service_endpoint = "false"
       }
 
       ip_rule = {
@@ -149,11 +149,11 @@ module "event_hub" {
     message_retention = "1"
 
     capture_description = {
-      enabled             = false
+      enabled             = "false"
       encoding            = "Avro"
       interval_in_seconds = "60"
       size_limit_in_bytes = "10485760"
-      skip_empty_archives = false
+      skip_empty_archives = "false"
 
       destination = {
         name                = "EventHubArchive.AzureBlockBlob"
