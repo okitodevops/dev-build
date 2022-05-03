@@ -22,9 +22,9 @@ module "network" {
   subnet_prefixes = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   subnet_names    = ["sn1-${module.network.vnet_name}", "sn2-${module.network.vnet_name}", "sn3-${module.network.vnet_name}"] //sn1-vnet-ldo-euw-dev-01
   subnet_service_endpoints = {
-    "sn1-${module.network.vnet_name}" = ["Microsoft.Storage"]                   // Adds extra subnet endpoints to sn1-vnet-ldo-euw-dev-01
-    "sn2-${module.network.vnet_name}" = ["Microsoft.Storage", "Microsoft.Sql"], // Adds extra subnet endpoints to sn2-vnet-ldo-euw-dev-01
-    "sn3-${module.network.vnet_name}" = ["Microsoft.AzureActiveDirectory"]      // Adds extra subnet endpoints to sn3-vnet-ldo-euw-dev-01
+    "sn1-${module.network.vnet_name}" = ["Microsoft.Storage", "Microsoft.EventHub"] // Adds extra subnet endpoints to sn1-vnet-ldo-euw-dev-01
+    "sn2-${module.network.vnet_name}" = ["Microsoft.Storage", "Microsoft.Sql"],     // Adds extra subnet endpoints to sn2-vnet-ldo-euw-dev-01
+    "sn3-${module.network.vnet_name}" = ["Microsoft.AzureActiveDirectory"]          // Adds extra subnet endpoints to sn3-vnet-ldo-euw-dev-01
   }
 }
 
@@ -92,162 +92,124 @@ module "sa" {
   }
 }
 
-// Default behaviour uses "registry.terraform.io/libre-devops/windows-os-plan-calculator/azurerm"
-module "win_vm_simple" {
-  source = "registry.terraform.io/libre-devops/windows-vm/azurerm"
+module "plan" {
+  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  vm_amount          = 1
-  vm_hostname        = "win${var.short}${var.loc}${terraform.workspace}" // winldoeuwdev01 & winldoeuwdev02 & winldoeuwdev03
-  vm_size            = "Standard_B2ms"
-  use_simple_image   = true
-  vm_os_simple       = "WindowsServer2019"
-  vm_os_disk_size_gb = "127"
+  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
+  add_to_app_service_environment = false
 
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.win_vm_simple.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value // Created with the Libre DevOps Terraform Pre-Requisite script
-
-  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
-  storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
+  os_type  = "Windows"
+  sku_name = "Y1"
 }
 
-module "lnx_vm_simple" {
-  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-
-  vm_amount          = 1
-  vm_hostname        = "lnx${var.short}${var.loc}${terraform.workspace}"
-  vm_size            = "Standard_B2ms"
-  vm_os_simple       = "Ubuntu20.04"
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm_simple.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
-
-  subnet_id            = element(values(module.network.subnets_ids), 0)
-  availability_zone    = "alternate"
-  storage_account_type = "Standard_LRS"
-  identity_type        = "SystemAssigned"
-
-  tags = module.rg.rg_tags
+resource "azurerm_storage_container" "event_hub_blob" {
+  name                 = "blob${var.short}${var.loc}${terraform.workspace}01"
+  storage_account_name = module.sa.sa_name
+  type                 = "Block"
+  access_tier          = "Hot"
 }
 
-// Want to use this module without the SKU calculator? Try something like this:
-module "lnx_vm_with_custom_image" {
-  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
+#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
+module "fnc_app" {
+  source = "registry.terraform.io/libre-devops/windows-function-app/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  vm_amount   = 1
-  vm_hostname = "vm${var.short}${var.loc}${terraform.workspace}" // vmldoeuwdev01
-  vm_size     = "Standard_B2ms"
+  app_name        = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
+  service_plan_id = module.plan.service_plan_id
 
-  use_simple_image = false
-  source_image_reference = {
-    publisher = "Oracle"
-    offer     = "Oracle-Linux"
-    sku       = "ol82"
-    version   = "latest"
+  storage_account_name          = module.sa.sa_name
+  storage_account_access_key    = module.sa.sa_primary_access_key
+  storage_uses_managed_identity = "false"
+
+  identity_type               = "SystemAssigned"
+  functions_extension_version = "~4"
+
+  settings = {
+    site_config = {
+      minimum_tls_version = "1.2"
+      http2_enabled       = true
+
+      application_stack = {
+        java_version = 11
+      }
+    }
+
+    auth_settings = {
+      enabled = true
+    }
   }
-
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm_with_custom_image.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
-
-  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
-  storage_account_type = "Standard_LRS"
-  identity_type        = "UserAssigned"
-  identity_ids         = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 }
 
-// Sometimes you may want an image like the CIS images, these are part of a plan rather than the platform images.  You can use the ""registry.terraform.io/libre-devops/windows-os-plan-with-plan-calculator/azurerm""
-module "lnx_vm_with_plan" {
-  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
+module "event_hub_namespace" {
+  source = "registry.terraform.io/libre-devops/event-hub-namespace/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  vm_amount   = 1
-  vm_hostname = "jmp${var.short}${var.loc}${terraform.workspace}" // vmldoeuwdev01
-  vm_size     = "Standard_B2ms"
+  event_hub_namespace_name = "evhns-${var.short}-${var.loc}-${terraform.workspace}-01"
+  identity_type            = "SystemAssigned"
+  settings = {
+    sku                      = "Standard"
+    capacity                 = 1
+    auto_inflate_enabled     = false
+    maximum_throughput_units = 1
+    zone_redundant           = false
 
-  use_simple_image_with_plan = true
-  vm_os_simple               = "CISDebian10L1"
+    network_rulessets = {
+      default_action                 = "Deny"
+      trusted_service_access_enabled = true
 
-  vm_os_disk_size_gb = "127"
+      virtual_network_rule = {
+        subnet_id                                       = element(module.network.subnets_ids, 0) // uses sn1
+        ignore_missing_virtual_network_service_endpoint = false
+      }
 
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm_with_plan.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
+      ip_rule = {
+        ip_mask = data.http.user_ip.body
+        action  = "Allow"
+      }
+    }
 
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
-
-  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
-  storage_account_type = "Standard_LRS"
-  identity_type        = "UserAssigned"
-  identity_ids         = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
+  }
 }
 
-// Don't want to use either? No problem.  Try this:
-module "lnx_vm_with_custom_plan" {
-  source = "registry.terraform.io/libre-devops/linux-vm/azurerm"
+module "event_hub" {
+  source = "registry.terraform.io/libre-devops/event-hub/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  vm_amount   = 1
-  vm_hostname = "app${var.short}${var.loc}${terraform.workspace}" // appldoeuwdev01
-  vm_size     = "Standard_B2ms"
+  event_hub_name     = "evh-${var.short}-${var.loc}-${terraform.workspace}-01"
+  namespace_name     = module.event_hub_namespace.name
+  storage_account_id = module.sa.sa_id
 
-  use_simple_image           = false
-  use_simple_image_with_plan = false
+  settings = {
 
-  source_image_reference = {
-    publisher = "center-for-internet-security-inc"
-    offer     = "cis-centos-7-v2-1-1-l1"
-    sku       = "cis-centos7-l1"
-    version   = "latest"
+    status            = "Active"
+    partition_count   = "1"
+    message_retention = "1"
+
+    capture_description = {
+      enabled             = false
+      encoding            = "Avro"
+      interval_in_seconds = "60"
+      size_limit_in_bytes = "10485760"
+      skip_empty_archives = false
+
+      destination = {
+        name                = "EventHubArchive.AzureBlockBlob"
+        archive_name_format = "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+        blob_container_name = azurerm_storage_container.event_hub_blob.name
+      }
+    }
   }
-
-  plan = {
-    name      = "cis-centos7-l1"
-    product   = "cis-centos-7-v2-1-1-l1"
-    publisher = "center-for-internet-security-inc"
-  }
-
-  vm_os_disk_size_gb = "127"
-
-  asg_name = "asg-${element(regexall("[a-z]+", element(module.lnx_vm_with_custom_plan.vm_name, 0)), 0)}-${var.short}-${var.loc}-${terraform.workspace}-01" //asg-vmldoeuwdev-ldo-euw-dev-01 - Regex strips all numbers from string
-
-  admin_username = "LibreDevOpsAdmin"
-  admin_password = data.azurerm_key_vault_secret.mgmt_local_admin_pwd.value
-  ssh_public_key = data.azurerm_ssh_public_key.mgmt_ssh_key.public_key
-
-  subnet_id            = element(values(module.network.subnets_ids), 0) // Places in sn1-vnet-ldo-euw-dev-01
-  availability_zone    = "alternate"                                    // If more than 1 VM exists, places them in alterate zones, 1, 2, 3 then resetting.  If you want HA, use an availability set.
-  storage_account_type = "Standard_LRS"
-  identity_type        = "UserAssigned"
-  identity_ids         = [data.azurerm_user_assigned_identity.mgmt_user_assigned_id.id]
 }
