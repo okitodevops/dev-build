@@ -65,9 +65,6 @@ module "sa" {
     // Set this block to enable network rules
     network_rules = {
       default_action = "Allow"
-      #      bypass     = ["AzureServices", "Metrics", "Logging"]
-      #      ip_rules   = [chomp(data.http.user_ip.body)]
-      #      subnet_ids = [element(values(module.network.subnets_ids), 0)]
     }
 
     blob_properties = {
@@ -94,116 +91,21 @@ module "sa" {
 }
 
 #tfsec:ignore:azure-storage-no-public-access
-resource "azurerm_storage_container" "event_hub_blob" {
+resource "azurerm_storage_container" "event_grid_blob" {
   name                  = "blob${var.short}${var.loc}${terraform.workspace}01"
   storage_account_name  = module.sa.sa_name
   container_access_type = "container"
 }
 
-module "event_hub_namespace" {
-  source = "registry.terraform.io/libre-devops/event-hub-namespace/azurerm"
+module "event_grid_system_topic" {
+  source = "registry.terraform.io/libre-devops/event-grid-system-topic/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  event_hub_namespace_name = "evhns-${var.short}-${var.loc}-${terraform.workspace}-01"
-  identity_type            = "SystemAssigned"
-  settings = {
-    sku                  = "Standard"
-    capacity             = 1
-    auto_inflate_enabled = false
-    zone_redundant       = false
+  identity_type = "SystemAssigned"
 
-    network_rulesets = {
-      default_action                 = "Deny"
-      trusted_service_access_enabled = true
-
-      virtual_network_rule = {
-        subnet_id                                       = element(values(module.network.subnets_ids), 0) // uses sn1
-        ignore_missing_virtual_network_service_endpoint = false
-      }
-    }
-  }
-}
-
-module "event_hub" {
-  source = "registry.terraform.io/libre-devops/event-hub/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  event_hub_name     = "evh-${var.short}-${var.loc}-${terraform.workspace}-01"
-  namespace_name     = module.event_hub_namespace.name
-  storage_account_id = module.sa.sa_id
-
-  settings = {
-
-    status            = "Active"
-    partition_count   = "1"
-    message_retention = "1"
-
-    capture_description = {
-      enabled             = false
-      encoding            = "Avro"
-      interval_in_seconds = "60"
-      size_limit_in_bytes = "10485760"
-      skip_empty_archives = false
-
-      destination = {
-        name                = "EventHubArchive.AzureBlockBlob"
-        archive_name_format = "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
-        blob_container_name = azurerm_storage_container.event_hub_blob.name
-      }
-    }
-  }
-}
-
-module "plan" {
-  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
-  add_to_app_service_environment = false
-
-  os_type  = "Windows"
-  sku_name = "Y1"
-}
-
-#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
-module "fnc_app" {
-  source = "registry.terraform.io/libre-devops/windows-function-app/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  app_name        = "fnc-${var.short}-${var.loc}-${terraform.workspace}-01"
-  service_plan_id = module.plan.service_plan_id
-
-  storage_account_name          = module.sa.sa_name
-  storage_account_access_key    = module.sa.sa_primary_access_key
-  storage_uses_managed_identity = "false"
-
-  identity_type               = "SystemAssigned"
-  functions_extension_version = "~4"
-
-  settings = {
-    site_config = {
-      minimum_tls_version = "1.2"
-      http2_enabled       = true
-
-      application_stack = {
-        java_version = 11
-      }
-    }
-
-    auth_settings = {
-      enabled = true
-    }
-  }
+  topic_type             = "Microsoft.Storage.StorageAccount"
+  source_arm_resource_id = module.sa.sa_id
 }
