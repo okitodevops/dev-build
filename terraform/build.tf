@@ -93,8 +93,8 @@ module "sa" {
 }
 
 resource "azurerm_storage_container" "event_hub_blob" {
-  name                 = "blob${var.short}${var.loc}${terraform.workspace}01"
-  storage_account_name = module.sa.sa_name
+  name                  = "blob${var.short}${var.loc}${terraform.workspace}01"
+  storage_account_name  = module.sa.sa_name
   container_access_type = "private"
 }
 
@@ -128,7 +128,6 @@ module "event_hub_namespace" {
         action  = "Allow"
       }
     }
-
   }
 }
 
@@ -158,7 +157,7 @@ module "event_hub" {
 
       destination = {
         name                = "EventHubArchive.AzureBlockBlob"
-        archive_name_format = "${module.event_hub_namespace.name}/${module.event_hub.}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+        archive_name_format = "${module.event_hub_namespace.name}/${module.event_hub.name}/${formatdate("YYYY", timestamp())}}"
         blob_container_name = azurerm_storage_container.event_hub_blob.name
       }
     }
