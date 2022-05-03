@@ -110,3 +110,19 @@ module "event_grid_system_topic" {
   topic_type             = "Microsoft.Storage.StorageAccounts"
   source_arm_resource_id = module.sa.sa_id
 }
+
+module "event_grid_system_topic_subscription" {
+  source = "../../terraform-azurerm-eventgrid-system-topic-event-subscription"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  event_subscription_name = "evgsub-${var.short}-${var.loc}-${terraform.workspace}-01"
+
+  event_delivery_schema     = "EventGridSchema"
+  eventgrid_system_topic_id = module.event_grid_system_topic.eventgrid_id
+  eventgrid_settings = {
+
+  }
+}
