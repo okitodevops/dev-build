@@ -47,7 +47,7 @@ data "http" "user_ip" {
 #checkov:skip=CKV2_AZURE_1:CMKs are not considered in this module
 #checkov:skip=CKV2_AZURE_18:CMKs are not considered in this module
 #checkov:skip=CKV_AZURE_33:Storage logging is not configured by default in this module
-#tfsec:ignore:azure-storage-queue-services-logging-enabled tfsec:ignore:azure-storage-allow-microsoft-service-bypass
+#tfsec:ignore:azure-storage-queue-services-logging-enabled tfsec:ignore:azure-storage-allow-microsoft-service-bypass #tfsec:ignore:azure-storage-default-action-deny
 module "sa" {
   source = "registry.terraform.io/libre-devops/storage-account/azurerm"
 
@@ -121,11 +121,6 @@ module "event_hub_namespace" {
       virtual_network_rule = {
         subnet_id                                       = element(values(module.network.subnets_ids), 0) // uses sn1
         ignore_missing_virtual_network_service_endpoint = false
-      }
-
-      ip_rule = {
-        ip_mask = "${data.http.user_ip.body}/32"
-        action  = "Allow"
       }
     }
   }
