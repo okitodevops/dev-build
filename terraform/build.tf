@@ -122,8 +122,8 @@ module "event_grid_system_topic_subscription" {
 
   event_delivery_schema     = "EventGridSchema"
   eventgrid_system_topic_id = module.event_grid_system_topic.eventgrid_id
-  eventgrid_settings = {
 
+  eventgrid_settings = {
     storage_blob_dead_letter_destination = {
       storage_account_id          = module.sa.sa_id
       storage_blob_container_name = azurerm_storage_container.event_grid_blob.name
