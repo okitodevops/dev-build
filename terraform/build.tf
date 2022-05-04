@@ -181,7 +181,7 @@ module "event_grid_system_topic_subscription" {
   event_subscription_name = "evgsub-${var.short}-${var.loc}-${terraform.workspace}-01"
 
   event_delivery_schema     = "EventGridSchema"
-  eventgrid_system_topic_id = module.event_grid_system_topic.eventgrid_id
+  eventgrid_system_topic_id = module.event_grid_system_topic.source_arm_metric_id
   eventhub_endpoint_id      = module.event_hub.id
 
   eventgrid_settings = {
