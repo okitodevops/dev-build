@@ -180,9 +180,9 @@ module "event_grid_system_topic_subscription" {
 
   event_subscription_name = "evgsub-${var.short}-${var.loc}-${terraform.workspace}-01"
 
-  event_delivery_schema     = "EventGridSchema"
-  eventgrid_system_topic_id = module.event_grid_system_topic.eventgrid_id
-  eventhub_endpoint_id      = module.event_hub.id
+  event_delivery_schema = "EventGridSchema"
+  system_topic_name     = module.event_grid_system_topic.eventgrid_name
+  eventhub_endpoint_id  = module.event_hub.id
 
   eventgrid_settings = {
     storage_blob_dead_letter_destination = {
