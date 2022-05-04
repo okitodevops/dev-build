@@ -97,6 +97,66 @@ resource "azurerm_storage_container" "event_grid_blob" {
   container_access_type = "container"
 }
 
+module "event_hub_namespace" {
+  source = "registry.terraform.io/libre-devops/event-hub-namespace/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  event_hub_namespace_name = "evhns-${var.short}-${var.loc}-${terraform.workspace}-01"
+  identity_type            = "SystemAssigned"
+  settings = {
+    sku                  = "Standard"
+    capacity             = 1
+    auto_inflate_enabled = false
+    zone_redundant       = false
+
+    network_rulesets = {
+      default_action                 = "Deny"
+      trusted_service_access_enabled = true
+
+      virtual_network_rule = {
+        subnet_id                                       = element(values(module.network.subnets_ids), 0) // uses sn1
+        ignore_missing_virtual_network_service_endpoint = false
+      }
+    }
+  }
+}
+
+module "event_hub" {
+  source = "registry.terraform.io/libre-devops/event-hub/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  event_hub_name     = "evh-${var.short}-${var.loc}-${terraform.workspace}-01"
+  namespace_name     = module.event_hub_namespace.name
+  storage_account_id = module.sa.sa_id
+
+  settings = {
+
+    status            = "Active"
+    partition_count   = "1"
+    message_retention = "1"
+
+    capture_description = {
+      enabled             = false
+      encoding            = "Avro"
+      interval_in_seconds = "60"
+      size_limit_in_bytes = "10485760"
+      skip_empty_archives = false
+
+      destination = {
+        name                = "EventHubArchive.AzureBlockBlob"
+        archive_name_format = "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+        blob_container_name = azurerm_storage_container.event_grid_blob.name
+      }
+    }
+  }
+}
+
 module "event_grid_system_topic" {
   source = "registry.terraform.io/libre-devops/eventgrid-system-topic/azurerm"
 
@@ -122,6 +182,7 @@ module "event_grid_system_topic_subscription" {
 
   event_delivery_schema     = "EventGridSchema"
   eventgrid_system_topic_id = module.event_grid_system_topic.eventgrid_id
+  eventhub_endpoint_id      = module.event_hub.id
 
   eventgrid_settings = {
     storage_blob_dead_letter_destination = {
