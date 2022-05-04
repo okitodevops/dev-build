@@ -189,5 +189,10 @@ module "event_grid_system_topic_subscription" {
       storage_account_id          = module.sa.sa_id
       storage_blob_container_name = azurerm_storage_container.event_grid_blob.name
     }
+
+    dead_letter_identity = {
+      type                 = "UserAssigned"
+      userAssignedIdentity = data.azurerm_user_assigned_identity.mgmt_user_assigned_id // Made with the Libre DevOps Pre-Req script
+    }
   }
 }
