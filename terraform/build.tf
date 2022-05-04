@@ -191,8 +191,7 @@ module "event_grid_system_topic_subscription" {
     }
 
     dead_letter_identity = {
-      type                 = "UserAssigned"
-      userAssignedIdentity = data.azurerm_user_assigned_identity.mgmt_user_assigned_id // Made with the Libre DevOps Pre-Req script
+      type = "SystemAssigned"
     }
   }
 }
