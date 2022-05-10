@@ -38,7 +38,7 @@ jobs:
           terraform-provider-client-secret: ${{ secrets.SpokeSvpClientSecret }}
           terraform-provider-subscription-id: ${{ secrets.SpokeSubId }}
           terraform-provider-tenant-id: ${{ secrets.SpokeTenantId }}
-          terraform-compliance-path: "git:https://github.com/libre-devops/azure-naming-convention.git//?ref=main"
+          terraform-compliance-path: "git:https://github.com/libre-devops/azure-naming-convention.git//az-terraform-compliance-policy?ref=main"
           checkov-skipped-tests: "CKV2_AZURE_1,CKV_AZURE_4,CKV_AZURE_7,CKV2_AZURE_18,CKV_AZURE_33,CKV_AZURE_34,CKV_AZURE_35,CKV_AZURE_44,CKV_AZURE_50,CKV_AZURE_116,CKV_AZURE_117,CKV_AZURE_141,CKV_AZURE_145,CKV_AZURE_151,CKV2_AZURE_8,CKV2_AZURE_21"
           run-terraform-destroy: "false"
           run-terraform-plan-only: "true"
