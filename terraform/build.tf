@@ -17,7 +17,7 @@ module "law" {
 
   create_new_workspace       = true
   law_name                   = "law-${var.short}-${var.loc}-${terraform.workspace}-01"
-  law_sku                    = "Free"
+  law_sku                    = "PerNode"
   retention_in_days          = "7"
   daily_quota_gb             = "0.5"
   internet_ingestion_enabled = false
