@@ -99,6 +99,7 @@ stages:
               PULUMI_PATH: ${{ parameters.PULUMI_PATH }}
               PULUMI_DESTROY: ${{ parameters.PULUMI_DESTROY }}
               PULUMI_PREVIEW_ONLY: ${{ parameters.PULUMI_PREVIEW_ONLY }}
+              PULUMI_CONFIG_PASSPHRASE: $(SpokePulumiPassphrase)
               AZURE_STORAGE_ACCOUNT_NAME: $(SpokeSaName)
               AZURE_BLOB_CONTAINER_NAME: $(SpokeSaBlobContainerName)
               AZURE_STORAGE_KEY: $(SpokeSaPrimaryKey)
