@@ -58,10 +58,10 @@ variables:
 resources:
   repositories:
 
-  - repository: azure-pipelines-module-development-build
+  - repository: azdo-dev-build
     type: github
     endpoint: github_service_connection
-    name: libre-devops/azure-pipelines-module-development-build
+    name: libre-devops/azdo-dev-build
     ref: dev
 
   - repository: pulumi-azdo-pipeline-template
@@ -88,7 +88,7 @@ stages:
 
           # Declare the repos needed from the resources list
           - checkout: self
-          - checkout: azure-naming-convention
+          - checkout: pulumi-azdo-pipeline-template
 
           # Remotely fetch pipeline template, in this case, I am using one in my development repo.
           - template: /.azurepipelines/.templates/pulumi-cicd-template.yml@pulumi-azdo-pipeline-template
