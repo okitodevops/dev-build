@@ -35,7 +35,7 @@ module "law_solution" {
   law_workspace_id = module.law.law_workspace_id
   law_name         = module.law.law_name
 
-  plan {
+  plan = {
     publisher = "Microsoft"
     product   = "OMSGallery/ContainerInsights"
   }
