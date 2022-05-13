@@ -23,3 +23,20 @@ module "law" {
   internet_ingestion_enabled = false
   internet_query_enabled     = false
 }
+
+module "law_solution" {
+  source = "registry.terraform.io/libre-devops/log-analytics-workspace/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  solution_name    = "ContainerInsights"
+  law_workspace_id = module.law.law_workspace_id
+  law_name         = module.law.law_name
+
+  plan = {
+    publisher = "Microsoft"
+    product   = "OMSGallery/ContainerInsights"
+  }
+}
