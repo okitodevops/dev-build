@@ -31,7 +31,7 @@ parameters:
 
   - name: TERRAFORM_PATH
     type: string
-    default: "$(Build.SourcesDirectory)/azure-pipelines-module-development-build/terraform"
+    default: "$(Build.SourcesDirectory)/azdo-dev-build/terraform"
     displayName: "What is the path to your terraform code?"
 
   - name: TERRAFORM_VERSION
@@ -74,10 +74,10 @@ resources:
     name: libre-devops/azure-naming-convention
     ref: main
 
-  - repository: azure-pipelines-module-development-build
+  - repository: azdo-dev-build
     type: github
     endpoint: github_service_connection
-    name: libre-devops/azure-pipelines-module-development-build
+    name: libre-devops/azdo-dev-build
     ref: dev
 
   - repository: terraform-azdo-pipeline-template
