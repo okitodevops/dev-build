@@ -24,21 +24,14 @@ module "law" {
   internet_query_enabled     = false
 }
 
-module "law_solution" {
-  source = "registry.terraform.io/libre-devops/log-analytics-solution/azurerm"
+module "rt" {
+  source = "../../terraform-azurerm-route-table"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  solution_name    = "ContainerInsights"
-  law_workspace_id = module.law.law_workspace_id
-  law_name         = module.law.law_name
-
-  settings = {
-    plan = {
-      publisher = "Microsoft"
-      product   = "OMSGallery/ContainerInsights"
-    }
-  }
+  route_table_name              = "rt-${var.short}-${var.loc}-${terraform.workspace}-build"
+  enable_force_tunneling        = true
+  disable_bgp_route_propagation = true
 }
