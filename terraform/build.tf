@@ -8,20 +8,24 @@ module "rg" {
   #  lock_level = "CanNotDelete" // Do not set this value to skip lock
 }
 
-module "law" {
-  source = "registry.terraform.io/libre-devops/log-analytics-workspace/azurerm"
+module "network" {
+  source = "registry.terraform.io/libre-devops/network/azurerm"
 
-  rg_name  = module.rg.rg_name
+  rg_name  = module.rg.rg_name // rg-ldo-euw-dev-build
   location = module.rg.rg_location
-  tags     = module.rg.rg_tags
+  tags     = local.tags
 
-  create_new_workspace       = true
-  law_name                   = "law-${var.short}-${var.loc}-${terraform.workspace}-01"
-  law_sku                    = "PerNode"
-  retention_in_days          = "30"
-  daily_quota_gb             = "0.5"
-  internet_ingestion_enabled = false
-  internet_query_enabled     = false
+  vnet_name     = "vnet-${var.short}-${var.loc}-${terraform.workspace}-01" // vnet-ldo-euw-dev-01
+  vnet_location = module.network.vnet_location
+
+  address_space   = ["10.0.0.0/16"]
+  subnet_prefixes = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  subnet_names    = ["sn1-${module.network.vnet_name}", "sn2-${module.network.vnet_name}", "sn3-${module.network.vnet_name}"] //sn1-vnet-ldo-euw-dev-01
+  subnet_service_endpoints = {
+    "sn1-${module.network.vnet_name}" = ["Microsoft.Storage"]                   // Adds extra subnet endpoints to sn1-vnet-ldo-euw-dev-01
+    "sn2-${module.network.vnet_name}" = ["Microsoft.Storage", "Microsoft.Sql"], // Adds extra subnet endpoints to sn2-vnet-ldo-euw-dev-01
+    "sn3-${module.network.vnet_name}" = ["Microsoft.AzureActiveDirectory"]      // Adds extra subnet endpoints to sn3-vnet-ldo-euw-dev-01
+  }
 }
 
 module "rt" {
@@ -34,4 +38,7 @@ module "rt" {
   route_table_name              = "rt-${var.short}-${var.loc}-${terraform.workspace}-build"
   enable_force_tunneling        = true
   disable_bgp_route_propagation = true
+
+  associate_with_subnet  = true
+  subnet_id_to_associate = element(values(module.network.subnets_ids), 0)
 }
