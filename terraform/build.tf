@@ -28,6 +28,28 @@ module "network" {
   }
 }
 
+module "acr" {
+  source = "../../terraform-azurerm-azure-container-registry"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  acr_name      = "acr-${var.short}-${var.loc}-${terraform.workspace}-01"
+  sku           = "Standard"
+  identity_type = "SystemAssigned"
+  admin_enabled = true
+
+  settings = {
+    network_rule_set = {
+      virtual_network = {
+        action    = "Allow"
+        subnet_id = element(values(module.network.subnets_ids), 0)
+      }
+    }
+  }
+}
+
 module "rt" {
   source = "registry.terraform.io/libre-devops/route-table/azurerm"
 
