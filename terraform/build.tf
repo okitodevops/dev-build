@@ -25,7 +25,7 @@ module "law" {
 }
 
 module "rt" {
-  source = "../../terraform-azurerm-route-table"
+  source = "registry.terraform.io/libre-devops/route-table/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
