@@ -35,7 +35,7 @@ module "acr" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  acr_name      = "acr-${var.short}-${var.loc}-${terraform.workspace}-01"
+  acr_name      = "acr${var.short}${var.loc}${terraform.workspace}01"
   sku           = "Standard"
   identity_type = "SystemAssigned"
   admin_enabled = true
