@@ -35,8 +35,9 @@ module "rt" {
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  route_table_name              = "rt-${var.short}-${var.loc}-${terraform.workspace}-build"
+  route_table_name              = "rt-${var.short}-${var.loc}-${terraform.workspace}-01"
   enable_force_tunneling        = true
+  force_tunnel_route_name       = "udr-${var.short}-${var.loc}-${terraform.workspace}-ForceInternetTunnel"
   disable_bgp_route_propagation = true
 
   associate_with_subnet  = true
