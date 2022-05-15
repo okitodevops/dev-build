@@ -50,6 +50,26 @@ module "acr" {
   }
 }
 
+module "aci" {
+  source = "registry.terraform.io/libre-devops/azure-container-instance/azurerm"
+
+  rg_name  = module.rg.rg_name
+  location = module.rg.rg_location
+  tags     = module.rg.rg_tags
+
+  container_instance_name  = "aci${var.short}${var.loc}${terraform.workspace}01"
+  os_type                  = "Linux"
+  vnet_integration_enabled = false
+  identity_type            = "SystemAssigned"
+
+  settings = {
+    container = {
+      name  = "ubuntu-test"
+      image = "docker.io/ubuntu:latest"
+    }
+  }
+}
+
 module "rt" {
   source = "registry.terraform.io/libre-devops/route-table/azurerm"
 
