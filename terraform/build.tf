@@ -61,6 +61,11 @@ module "aci" {
       image  = "docker.io/ubuntu:latest"
       cpu    = "2"
       memory = "2"
+
+      ports = {
+        port     = "443"
+        protocol = "TCP"
+      }
     }
   }
 }
