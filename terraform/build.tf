@@ -64,8 +64,10 @@ module "aci" {
 
   settings = {
     container = {
-      name  = "ubuntu-test"
-      image = "docker.io/ubuntu:latest"
+      name   = "ubuntu-test"
+      image  = "docker.io/ubuntu:latest"
+      cpu    = "2"
+      memory = "2"
     }
   }
 }
