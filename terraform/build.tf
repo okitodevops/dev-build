@@ -39,15 +39,6 @@ module "acr" {
   sku           = "Standard"
   identity_type = "SystemAssigned"
   admin_enabled = true
-
-  settings = {
-    network_rule_set = {
-      virtual_network = {
-        action    = "Allow"
-        subnet_id = element(values(module.network.subnets_ids), 0)
-      }
-    }
-  }
 }
 
 module "aci" {
