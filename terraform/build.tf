@@ -35,8 +35,7 @@ module "web_app" {
 
   storage_uses_managed_identity = "false"
 
-  identity_type               = "SystemAssigned"
-  functions_extension_version = "~4"
+  identity_type = "SystemAssigned"
 
   settings = {
     site_config = {
