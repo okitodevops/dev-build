@@ -8,81 +8,49 @@ module "rg" {
   #  lock_level = "CanNotDelete" // Do not set this value to skip lock
 }
 
-module "network" {
-  source = "registry.terraform.io/libre-devops/network/azurerm"
-
-  rg_name  = module.rg.rg_name // rg-ldo-euw-dev-build
-  location = module.rg.rg_location
-  tags     = local.tags
-
-  vnet_name     = "vnet-${var.short}-${var.loc}-${terraform.workspace}-01" // vnet-ldo-euw-dev-01
-  vnet_location = module.network.vnet_location
-
-  address_space   = ["10.0.0.0/16"]
-  subnet_prefixes = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  subnet_names    = ["sn1-${module.network.vnet_name}", "sn2-${module.network.vnet_name}", "sn3-${module.network.vnet_name}"] //sn1-vnet-ldo-euw-dev-01
-  subnet_service_endpoints = {
-    "sn1-${module.network.vnet_name}" = ["Microsoft.Storage"]                   // Adds extra subnet endpoints to sn1-vnet-ldo-euw-dev-01
-    "sn2-${module.network.vnet_name}" = ["Microsoft.Storage", "Microsoft.Sql"], // Adds extra subnet endpoints to sn2-vnet-ldo-euw-dev-01
-    "sn3-${module.network.vnet_name}" = ["Microsoft.AzureActiveDirectory"]      // Adds extra subnet endpoints to sn3-vnet-ldo-euw-dev-01
-  }
-}
-
-module "acr" {
-  source = "registry.terraform.io/libre-devops/azure-container-registry/azurerm"
+module "plan" {
+  source = "registry.terraform.io/libre-devops/service-plan/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  acr_name      = "acr${var.short}${var.loc}${terraform.workspace}01"
-  sku           = "Standard"
-  identity_type = "SystemAssigned"
-  admin_enabled = true
+  app_service_plan_name          = "asp-${var.short}-${var.loc}-${terraform.workspace}-01"
+  add_to_app_service_environment = false
 
-  settings = {}
+  os_type  = "Linux"
+  sku_name = "S1"
 }
 
-module "aci" {
-  source = "registry.terraform.io/libre-devops/azure-container-instance/azurerm"
+#checkov:skip=CKV2_AZURE_145:TLS 1.2 is allegedly the latest supported as per hashicorp docs
+module "web_app" {
+  source = "registry.terraform.io/libre-devops/linux-web-app/azurerm"
 
   rg_name  = module.rg.rg_name
   location = module.rg.rg_location
   tags     = module.rg.rg_tags
 
-  container_instance_name  = "aci${var.short}${var.loc}${terraform.workspace}01"
-  os_type                  = "Linux"
-  vnet_integration_enabled = false
-  identity_type            = "SystemAssigned"
+  app_name        = "app-${var.short}-${var.loc}-${terraform.workspace}-01"
+  service_plan_id = module.plan.service_plan_id
+
+  web_app_extension_version     = ""
+  storage_uses_managed_identity = "false"
+
+  identity_type               = "SystemAssigned"
+  functions_extension_version = "~4"
 
   settings = {
-    container = {
-      name   = "ubuntu-test"
-      image  = "docker.io/ubuntu:latest"
-      cpu    = "2"
-      memory = "2"
+    site_config = {
+      minimum_tls_version = "1.2"
+      http2_enabled       = true
 
-      // Ports cannot be empty in Azure.  For security, 443 with no HTTPS listener is probably the best security.
-      ports = {
-        port     = "443"
-        protocol = "TCP"
+      application_stack = {
+        powershell_core_version = 7
       }
     }
+
+    auth_settings = {
+      enabled = true
+    }
   }
-}
-
-module "rt" {
-  source = "registry.terraform.io/libre-devops/route-table/azurerm"
-
-  rg_name  = module.rg.rg_name
-  location = module.rg.rg_location
-  tags     = module.rg.rg_tags
-
-  route_table_name              = "rt-${var.short}-${var.loc}-${terraform.workspace}-01"
-  enable_force_tunneling        = true
-  force_tunnel_route_name       = "udr-${var.short}-${var.loc}-${terraform.workspace}-ForceInternetTunnel"
-  disable_bgp_route_propagation = true
-
-  associate_with_subnet  = true
-  subnet_id_to_associate = element(values(module.network.subnets_ids), 0)
 }
