@@ -33,7 +33,6 @@ module "web_app" {
   app_name        = "app-${var.short}-${var.loc}-${terraform.workspace}-01"
   service_plan_id = module.plan.service_plan_id
 
-  web_app_extension_version     = ""
   storage_uses_managed_identity = "false"
 
   identity_type               = "SystemAssigned"
@@ -45,7 +44,7 @@ module "web_app" {
       http2_enabled       = true
 
       application_stack = {
-        powershell_core_version = 7
+        python_version = 3.9
       }
     }
 
