@@ -1,13 +1,9 @@
 name: 'Terraform Plan'
 
-#Allow run manually or on push to main or in PR closure
+# Allow run manually
 on:
-  push:
-    branches:
-    - main
-  pull_request:
-    types: [closed]
   workflow_dispatch:
+
 
 jobs:
   azure-terraform-job:
